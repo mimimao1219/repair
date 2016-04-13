@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>维修管理</title>
+
+	<link rel="stylesheet" href="../public/stylesheets/mui.min.css" />
+	<style>
+		.mui-control-content {
+			background-color: #EFEFF4;
+			min-height: 450px;
+		}
+		.mui-control-content .mui-loading {
+			margin-top: 50px;
+		}
+	</style>
+     
+</head>
+<body>
+	
+	<div class="mui-content">
+		<ul class="mui-table-view" style="margin-top: 0px;">
+			<li class="mui-table-view-cell mui-media" >
+				<% if (usertype === '1') { %>
+					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
+							姓名：谢居正
+					</div>
+					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
+							所在单位：支行-红专路
+					</div>	
+					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
+					<% } %>
+					<% if (usertype === '2') { %>
+					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
+							姓名：赵亮亮
+					</div>
+					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
+							所在单位：信息中心
+					</div>	
+					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
+					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">维修公司管理</a>
+					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">维修类型管理</a>
+					<% } %>
+					<% if (usertype === '3') { %>
+					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
+							河南省银利科技有限公司
+					</div>
+					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
+							
+					</div>	
+
+					<% } %>
+			</li>
+		</ul>
+		
+		<div id="slider" class="mui-slider"style="margin-top: 0px;position: fixed;">
+			 			
+				<% if (usertype === '1') { %>	
+					<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="background: #FFFFFF;margin-top: 0px;">
+					<a class="mui-control-item" href="#item1mobile">
+						未完成
+					</a>
+					<a class="mui-control-item" href="#item2mobile">
+						待评价
+					</a>
+					</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<% } %>
+				<% if (usertype === '2'||usertype === '3') { %>	
+					<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="background: #FFFFFF;margin-top: 0px;">
+					<a class="mui-control-item" href="#item1mobile">
+						待分配
+					</a>
+					<a class="mui-control-item" href="#item2mobile">
+						已分配
+					</a>
+					<a class="mui-control-item" href="#item3mobile">
+						已结束
+					</a>		
+					</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-4"></div>
+				<% } %>
+				
+				<div class="mui-slider-group">
+					<% if (usertype === '1') { %>	
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<%- partial('_repaircurrent', {collection:repairCurrents, as:'repairCurrent'}) %>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll2" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<%- partial('_repaircurrent', {collection:repairfinishs, as:'repairCurrent'}) %>							
+							</div>
+						</div>
+					</div>
+					<% } %>
+					<% if (usertype === '2'||usertype === '3') { %>	
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<%- partial('_repaircurrent', {collection:repairCurrents, as:'repairCurrent'}) %>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll2" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<%- partial('_repaircurrent', {collection:repairCurrentsing, as:'repairCurrent'}) %>							
+							</div>
+						</div>
+					</div>
+					<div id="item3mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll3" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<%- partial('_repaircurrent', {collection:repairfinishs, as:'repairCurrent'}) %>							
+							</div>
+						</div>
+					</div>
+					<% } %>
+					<% if (usertype === '4') { %>	
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<%- partial('_repaircurrent', {collection:repairCurrentsing, as:'repairCurrent'}) %>
+							</div>
+						</div>
+					</div>
+					<% } %>
+				</div>
+			</div>
+
+	</div>
+	<script src="../public/javascripts/mui.min.js"></script>
+		<script type="text/javascript" charset="utf-8">
+      		mui.init({
+				swipeBack: false
+			});
+			
+			(function($) {
+				$('.mui-scroll-wrapper').scroll({
+					indicators: true //是否显示滚动条
+				});
+//				var html2 = '';
+//
+//				var sliderSegmentedControl = document.getElementById('sliderSegmentedControl');
+//				$('.mui-input-group').on('change', 'input', function() {
+//					if (this.checked) {
+//						sliderSegmentedControl.className = 'mui-slider-indicator mui-segmented-control mui-segmented-control-inverted mui-segmented-control-' + this.value;
+//						//force repaint
+//						sliderProgressBar.setAttribute('style', sliderProgressBar.getAttribute('style'));
+//					}
+//				});
+			<% if (usertype === '1') { %>	
+				//打开申请报修页面
+				document.getElementById('apply').addEventListener('tap', function() {
+       			mui.openWindow({
+	    			url:'/repair/create',
+	    			id:'repair.create',
+					});
+				});	
+			<% } %>		
+			
+				})(mui);
+			
+    </script>
+</body>
+</html>

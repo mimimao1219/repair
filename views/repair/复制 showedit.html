@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>报修管理</title>
+
+    <link rel="stylesheet" href="../public/stylesheets/mui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../public/stylesheets/mui.picker.min.css" />
+   <style> 
+    	.mui-input-row{border-bottom: 1px solid #e1e2e3; }
+    .mui-input-row label{float:left;padding-left: 15px; padding-right: 0px;  width: 45%;}
+    .mui-table-view2 p{padding-left: 15px;font-size: 17px;  color: #000000; border-bottom: 1px solid #e1e2e3; padding-bottom: 10px;}
+    .mui-table-view2 span{color: #9e9e9e; float: right;}
+    .mui-table-view2 p span{padding-right: 15px; color: #9e9e9e; float: right;}
+    .mui-table-view-cells {	position: relative;	overflow: hidden;	padding: 11px 15px;	-webkit-touch-callout: none; border-bottom: 1px solid #ebecee ;}
+	 .mui-white-space{ overflow: hidden;    white-space: nowrap;    text-overflow: ellipsis; padding-right: 15px;}
+    /*	新添加样式*/
+	.mui-table-view-cells  h4{color:#9e9e9e;font-weight: normal;}
+	.mui-table-view-cells{background-color: #ececec;}
+	.mui-table-view2{position: relative;	margin-top: 0;	margin-bottom: 0px;	padding-left: 0;	list-style: none;	background-color: #fff;}
+    .mui-input-row span{padding-top: 10px; padding-right: 15px; width: 58%; text-align: right;}
+    .mui-tj{float: right; color: #0062cc; border: none; background:none; padding: 0px 0px; font-size: 17px;}
+    </style>
+</head>
+
+<body>
+	<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+	<!--保修公司选择-->
+	<aside id="offCanvasSide" class="mui-off-canvas-right">
+		<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+			<div class="mui-scroll">	
+				<!--保修公司-->
+					<ul id='gongyingshangselect'  class="mui-table-view mui-table-view-chevron mui-table-view-inverted">							
+							<%if (companies!=null){%>
+							<%- partial('./_company', {collection:companies, as:'company'}) %>
+							<%}%>
+					</ul>			
+				</div>
+			</div>
+	</aside>
+		
+		
+	<div class="mui-inner-wrap">	
+	<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+
+		<form id='edit_form' action='/repair/update' method='post'>
+		<input type='hidden' name='_csrf' value='<%= csrf %>'>
+		<input type='hidden' name='usertype' value='<%= usertype %>'>
+		<!--<input type='hidden' name='usertype' value='<%= usertype %>'>-->
+		<input id='companyid' name='companyid' value= '<%= typeof(repaircurrent.companyid) !== 'undefined' && repaircurrent.companyid || '' %>' type="hidden"  >
+		<input type='hidden' id='comtact_type' name='comtact_type' value='<%= typeof(repaircurrent.comtact_type) !== 'undefined' && repaircurrent.comtact_type || '' %>'>
+		
+		<input id='repairid' name='repairid' type='hidden'  value=<%= typeof(repaircurrent._id) !== 'undefined' && repaircurrent._id || '' %>  >
+		<% if (usertype==1) { %>
+		    <!--评价	-->
+		<div style="padding-bottom: 50px; background: #FFFFFF;">
+			<ul class="mui-table-view2">
+							<li class="mui-table-view-cells" >
+										<h4>评价
+											<button type="submit" class="mui-btn mui-tj"  >提交保存  </button>
+										</h4>
+							</li>
+				
+			</ul>
+			<div class="mui-input-row" style="border-bottom: none; color: #9e9e9e;">
+					<textarea id="repairassesscontent" rows="3" placeholder="请对本次维修进行评价" ></textarea>
+			</div>
+			<div class=" mui-radio mui-left"style="font-size: 14px; float: left;">
+					<label  style=" padding-top:8px;">好评</label>
+					<input name="repairassess" value=1 type="radio" <%= repaircurrent.repairassess == 1 && 'checked' || '' %> >		
+			</div>
+			<div class=" mui-radio mui-left" style="font-size: 14px; float: left;">
+					<label style=" padding-top:8px;">中评</label>
+					<input name="repairassess" value=2 type="radio" <%= repaircurrent.repairassess == 2 && 'checked' || '' %>>		
+			</div>
+			<div class=" mui-radio mui-left" style="font-size: 14px;float: left;">
+					<label  style=" padding-top:8px;">差评</label>
+					<input name="repairassess" value=3 type="radio" <%= repaircurrent.repairassess == 3 && 'checked' || '' %>>		
+			</div>
+		</div>
+		<div class="mui-clearfix"></div>		
+		<%}%>
+		<%if (usertype==2) {%>
+			<!--维修管理员分配维修供应商信息-->
+		<div>
+			<ul class="mui-table-view2">
+					<li class="mui-table-view-cells" style="margin: 0;">
+								<h4>维修公司信息
+								<button type="button" class="mui-btn mui-tj ">强制终止 </button>
+								<span style="float: right; display: inline;overflow: hidden; background-color: #0062cc; width: 1px; margin: 0px 5px;">&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+								<button type="submit" class="mui-btn mui-tj"  >提交保存  </button>
+								</h4>
+					</li>
+					<li class="mui-input-row" >
+							<a class="mui-navigate-right" id="gongyingshang">
+								<label style=" width: 42%;">维修公司：</label>
+								<input id='companyname' name='companyname' value= '<%= typeof(repaircurrent.companyname) !== 'undefined' && repaircurrent.companyname || '' %>' type="text" class="mui-input-clear" placeholder="维修公司"  onfocus=this.blur() style="padding-left: 15px;width: 58%;">												    	
+							</a>
+					</li>
+					<li class="mui-input-row"  >
+								<label  style=" width: 42%;">通知维修时间：</label>								
+								<input id='confirm_at' name='confirm_at' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.confirm_at) !== 'undefined' && repaircurrent.confirm_at_ago() || '' %>' style="padding-left: 15px;width: 58%;" >
+					</li>
+					<li class="mui-input-row"  >
+								<label style=" width: 42%;">要求结束时间：</label>
+								<input id='LstWarn_at' name='LstWarn_at' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.LstWarn_at) !== 'undefined' && repaircurrent.LstWarn_at_ago() || '' %>' style="padding-left: 15px;width: 58%;">
+					</li>
+			</ul>
+		</div>
+		<%}%>
+		<%if (usertype==3) {%>
+			<!--维修供应商分配维修人员信息-->
+		<div>
+			<ul class="mui-table-view2" >
+				<li class="mui-table-view-cells"  >
+						<h4>维修人员信息
+						<button type="submit" class="mui-btn mui-tj"  >提交保存  </button>
+						</h4>
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 42%;">维修人员姓名：</label>					
+				    <input id='comtact' name='comtact' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact) !== 'undefined' && repaircurrent.comtact || '' %>' style="padding-left: 15px; width: 58%;">
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 42%;">维修人员电话：</label>
+					<input id='comtact_tel' name='comtact_tel' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact_tel) !== 'undefined' && repaircurrent.comtact_tel || '' %>' style="padding-left: 15px;width: 58%;">					
+				</li>
+				<li class="mui-input-row"   >
+					<label style=" width: 42%;">维修手机：</label>
+					<input id='comtact_mob' name='comtact_mob' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact_mob) !== 'undefined' && repaircurrent.comtact_mob || '' %>' style="padding-left: 15px;width: 58%;">
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 42%;">维修邮箱：</label>
+					<input id='comtact_mail' name='comtact_mail' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact_mail) !== 'undefined' && repaircurrent.comtact_mail || '' %>' style="padding-left: 15px;width: 58%;">
+				</li>
+							
+		</ul>
+		</div>
+		<%}%>
+		<%if (usertype==4) {%>
+			<!--维修人员完成维修信息-->
+		<div>
+			<ul class="mui-table-view2" >
+				<li class="mui-table-view-cells"  >
+						<h4>完成维修信息
+						<button type="submit" class="mui-btn mui-tj"  >提交保存  </button>
+						</h4>
+				</li>
+				<!--<li class="mui-input-row"  >
+					<label style=" width: 42%;">完成时间：</label>
+					<input id='repairend_at' name='repairend_at' value='<%= typeof(repaircurrent.repairend_at) !== 'undefined' && repaircurrent.repairend_at_ago() || '' %>' type="text" class="mui-input-clear" value='' style="padding-left: 15px; width: 58%;">
+				</li>-->
+				<li class="mui-input-row "  style="background-color: #f6f6f7;">
+				<label style=" width: 42%;">情况说明：</label>
+				<textarea id='companyreturncontent' name='companyreturncontent' id="textarea" rows="3" placeholder="填写需要的说明信息" style="padding-left: 15px; width: 58%;">
+					<%= typeof(repaircurrent.companyreturncontent) !== 'undefined' && repaircurrent.companyreturncontent || '' %>					
+				</textarea>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     				
+			    </li>
+			    
+		</div>
+		<%}%>
+		
+		</from>	
+		 			<!--报修基本信息-->
+		 <div >
+				<ul class="mui-table-view2" style=" padding-bottom: 20px; ">
+					<li class="mui-table-view-cells" >
+						<h4  >报修基本信息</h4>
+					</li>
+						<p style="padding-top: 10px;">
+			                <lable>成本中心:</lable>
+							<span><%=repaircurrent.costcentername %></span>
+						</p>
+		                <p>
+		                   	<lable>报修类别:</lable>
+							<span><%=repaircurrent.repairtypename %></span>
+		                </p>
+		                <p>
+		                   	<lable>报修人员:</lable>
+							<span><%=repaircurrent.repairname %></span>
+		                </p>
+		                 <p>
+		                   	<lable>联系电话:</lable>
+							<span><%=repaircurrent.repairtel %></span>
+		                </p>
+		                <p>
+		                   	<lable>电子邮箱:</lable>
+							<span><%=repaircurrent.repairmail %></span>
+		                </p>
+		                <p>
+		                   	<lable>故障描述:</lable>
+							<span> <%=repaircurrent.repairContent %>  </span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     </span>
+		                </p>
+		               <%if (images&&images.qnsrc) {%>
+		                	<p  style="display: inline-block; border-bottom: none;">照片信息：</p>		                 
+			                	<p>
+			               <div id='imagepr'>
+				                <% 	images.qnsrc.forEach(function (image) { %>
+				                <img  class="mui-media-object " style="margin-left:15px; width: 80px; max-width: 80px;height: 80px; max-height: 80px;" src="<%=image%>">				                
+				                <%  });   %>
+				                </div>
+							</p>
+					      <%}%>			      
+				</ul>
+		</div>
+		<div class="mui-clearfix"></div>
+		<%if (usertype!=2) {%>
+		<!--维修管理员分配维修供应商信息-->
+		<div>
+			<ul class="mui-table-view2" >
+					<li class="mui-table-view-cells" style="margin: 0;">
+								<h4>维修公司信息</h4>
+					</li>
+					<li class="mui-input-row" >
+								<label style=" width: 42%;">维修公司：</label>
+								<span class='mui-white-space'><%= typeof(repaircurrent.companyname) !== 'undefined' && repaircurrent.companyname || '' %>	</span>								
+								<!--<input id='companyid' name='companyid' value= '<%= typeof(repaircurrent.companyname) !== 'undefined' && repaircurrent.companyname || '' %>' type="text" class="mui-input-clear" placeholder="维修公司"  onfocus=this.blur() style="padding-left: 15px;width: 60%;">-->												    	
+
+					</li>
+					<li class="mui-input-row"  >
+								<label  style=" width: 42%;">通知维修时间：</label>
+								<span><%= typeof(repaircurrent.confirm_at) !== 'undefined' && repaircurrent.confirm_at_ago() || '' %>	</span>	
+								<!--<input id='confirm_at' name='confirm_at' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.confirm_at) !== 'undefined' && repaircurrent.confirm_at_ago() || '' %>' style="padding-left: 15px;width: 60%;" >-->
+					</li>
+					<li class="mui-input-row"  >
+								<label style=" width: 42%;">要求结束时间：</label>
+								<span><%= typeof(repaircurrent.LstWarn_at) !== 'undefined' && repaircurrent.LstWarn_at_ago() || '' %>	</span>	
+								<!--<input id='LstWarn_at' name='LstWarn_at' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.LstWarn_at) !== 'undefined' && repaircurrent.LstWarn_at_ago() || '' %>' style="padding-left: 15px;width: 60%;">-->
+					</li>
+			</ul>
+		</div>
+		<%}%>	
+		<%if (usertype!=3) {%>
+		<!--维修供应商分配维修人员信息-->
+		<div>
+			<ul class="mui-table-view2" >
+				<li class="mui-table-view-cells"  >
+						<h4>维修人员信息</h4>
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 42%;">维修人员姓名：</label>	
+					<span><%= typeof(repaircurrent.comtact) !== 'undefined' && repaircurrent.comtact || '' %>	</span>	
+				    <!--<input id='comtact' name='comtact' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact) !== 'undefined' && repaircurrent.comtact || '' %>' style="padding-left: 15px; width: 60%;">-->
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 40%;">维修人员电话：</label>
+					<span><%= typeof(repaircurrent.comtact_tel) !== 'undefined' && repaircurrent.comtact_tel || '' %>	</span>	
+					<!--<input id='comtact_tel' name='comtact_tel' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact_tel) !== 'undefined' && repaircurrent.comtact_tel || '' %>' style="padding-left: 15px;width: 60%;">-->					
+				</li>
+				<li class="mui-input-row"   >
+					<label style=" width: 42%;">维修手机：</label>
+					<span><%= typeof(repaircurrent.comtact_mob) !== 'undefined' && repaircurrent.comtact_mob || '' %>	</span>	
+					<!--<input id='comtact_mob' name='comtact_mob' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact_mob) !== 'undefined' && repaircurrent.comtact_mob || '' %>' style="padding-left: 15px;width: 60%;">-->
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 42%;">维修邮箱：</label>
+					<span><%= typeof(repaircurrent.comtact_mail) !== 'undefined' && repaircurrent.comtact_mail || '' %>	</span>	
+					<!--<input id='comtact_mail' name='comtact_mail' type="text" class="mui-input-clear" value='<%= typeof(repaircurrent.comtact_mail) !== 'undefined' && repaircurrent.comtact_mail || '' %>' style="padding-left: 15px;width: 60%;">-->
+				</li>
+							
+		</ul>
+		</div>
+		<%}%>	
+		<%if (usertype!=4) {%>
+		<!--维修人员完成维修信息-->
+		<div>
+			<ul class="mui-table-view2" >
+				<li class="mui-table-view-cells"  >
+						<h4>完成维修信息</h4>
+				</li>
+				<li class="mui-input-row"  >
+					<label style=" width: 42%;">完成时间：</label>
+					<span><%= typeof(repaircurrent.repairend_at) !== 'undefined' && repaircurrent.repairend_at_ago() || '' %>	</span>	
+					<!--<input id='repairend_at' name='repairend_at' value='<%= typeof(repaircurrent.repairend_at) !== 'undefined' && repaircurrent.repairend_at_ago() || '' %>' type="text" class="mui-input-clear" value=''    style="padding-left: 15px; width: 60%;">-->
+				</li>
+				<li class="mui-input-row "  style="border-bottom: none;">
+				<label style=" width: 42%;">情况说明：</label>
+				
+				<!--<textarea id='companyreturncontent' name='companyreturncontent' id="textarea" rows="3" placeholder="填写需要的说明信息" style="padding-left: 15px; width: 60%;">
+					<%= typeof(repaircurrent.companyreturncontent) !== 'undefined' && repaircurrent.companyreturncontent || '' %>					
+				</textarea>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     				-->
+			    </li>	
+			    <li><p style="display: block; text-indent: 2em; color: #9e9e9e;" ><%= typeof(repaircurrent.companyreturncontent) !== 'undefined' && repaircurrent.companyreturncontent || '' %></p></li>
+		</div>
+		<%}%>	
+		<%if (usertype!=1) {%>
+		<!--评价	-->
+		<div>
+			<ul class="mui-table-view2" >
+							<li class="mui-table-view-cells" >
+										<h4>评价</h4>
+							</li>
+				
+			</ul>
+			<div class="mui-input-row" style="border-bottom: none;">
+				<span><%= typeof(repaircurrent.repairassesscontent) !== 'undefined' && repaircurrent.repairassesscontent || '' %>	</span>	
+					<!--<textarea id="textarea" rows="3" placeholder="请对本次维修进行评价" ></textarea>-->
+			</div>
+			<div class=" mui-radio mui-left"style="font-size: 14px; float: left;">
+					<label  style=" padding-top:8px;">好评</label>
+					<input name="radio1" type="radio" <%= repaircurrent.repairassess == 1 && 'checked' || '' %>>		
+			</div>
+			<div class=" mui-radio mui-left" style="font-size: 14px; float: left;">
+					<label style=" padding-top:8px;">中评</label>
+					<input name="radio1" type="radio" <%= repaircurrent.repairassess == 2 && 'checked' || '' %> >		
+			</div>
+			<div class=" mui-radio mui-left" style="font-size: 14px;float: left;">
+					<label  style=" padding-top:8px;">差评</label>
+					<input name="radio1" type="radio"<%= repaircurrent.repairassess == 3 && 'checked' || '' %>>		
+			</div>
+		</div>
+		<div class="mui-clearfix"></div>
+		<%}%>
+		
+
+	  </div> 
+	</div>
+	</div>
+    </div>
+	<script src="../public/javascripts/mui.min.js"></script>
+
+	<script src="../public/javascripts/mui.picker.min.js"></script>
+	<script src="../public/javascripts/zepto.min.js"></script>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script type="text/javascript" charset="utf-8">
+// 使用 jq 动态加载 微信配置
+<%	if (images&&images.qnsrc) { %>
+		$.ajax({
+		    url: '/getsignature' ,// 此处url请求地址需要替换成你自己实际项目中服务器数字签名服务地址		        
+		    type: 'post',
+		    data: {
+		        url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+		    },
+		    success: function(r){
+			// 开始配置微信JS-SDK
+		    wx.config({
+		        debug: false,
+		        appId: r.appId,
+		        timestamp: r.timestamp,
+		        nonceStr: r.nonceStr,
+		        signature: r.signature,
+		        jsApiList: ['checkJsApi','chooseImage','scanQRCode','previewImage','uploadImage','downloadImage']
+		    });
+		  },
+		  error: function(xhr, type){
+		    alert('微信js-sdk认证失败!')
+		  }		    
+		});
+		
+		//通过ready接口处理成功验证
+			wx.ready(function(){	
+				//document.getElementById('imagepr').addEventListener('tap', function() {	
+			
+				mui('#imagepr').on('tap', 'img', function() {
+					var pic='<%=images.qnsrc%>';
+					var ar='http://'+location.hostname+'/public/';
+					var pica=(pic.replace(/\/public\//g,ar)).split(',');
+					//alert(this.src);
+					var current='http://'+location.hostname+this.src;
+					wx.previewImage({
+					    current: current, 
+					    urls: pica 
+					});				
+				});
+			
+			});
+	<% } %>
+
+
+
+
+
+mui.init();
+//侧滑容器父节点
+var offCanvasWrapper = mui('#offCanvasWrapper');
+//主界面容器
+var offCanvasInner = offCanvasWrapper[0].querySelector('.mui-inner-wrap');
+//菜单容器
+var offCanvasSide = document.getElementById("offCanvasSide");
+//移动效果是否为整体移动
+var moveTogether = false;
+//主界面‘显示侧滑菜单’按钮的点击事件
+<% if (usertype==2){ %>
+document.getElementById('gongyingshang').addEventListener('tap', function() {
+	offCanvasWrapper.offCanvas('show');
+});
+<%}%>
+//主界面和侧滑菜单界面均支持区域滚动；
+mui('#offCanvasSideScroll').scroll();
+mui('#offCanvasContentScroll').scroll();
+
+mui('#gongyingshangselect').on('tap', 'a', function() {
+	document.getElementById('companyid').value = this.id;
+	document.getElementById('companyname').value = this.name;
+
+	offCanvasWrapper.offCanvas('close');
+});
+var picker = new mui.DtPicker({});
+<% if (usertype==2){ %>
+document.getElementById('confirm_at').addEventListener('tap', function() {
+	picker.show(function(rs) {
+		document.getElementById('confirm_at').value=rs.value;
+		//picker.dispose();
+	})
+});
+document.getElementById('LstWarn_at').addEventListener('tap', function() {
+	picker.show(function(rs) {
+		document.getElementById('LstWarn_at').value=rs.value;
+		//picker.dispose();
+	})
+});
+<%}%>
+						
+	
+    
+    </script>
+
+		
+	</body>
+</html>
+
+

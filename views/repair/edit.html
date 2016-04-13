@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>申请报修</title>
+
+    <link rel="stylesheet" href="../public/stylesheets/mui.min.css" />
+   
+</head>
+
+<body>
+	<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+	<!--保修类型选择-->
+	<aside id="offCanvasSide" class="mui-off-canvas-right" style="background-color: gray;" >
+		<div id="offCanvasSideScroll" class="mui-scroll-wrapper">
+			<div class="mui-scroll">	
+				<!--成本中心-->
+					<ul id='costcenterselect' style=' display:none ' class="mui-table-view mui-table-view-chevron mui-table-view-inverted">							
+							<%- partial('./_costcenter', {collection:costcenters, as:'costcenter'}) %>
+					</ul>
+				<!--维修分类-->	
+					<ul id='repairtypeselect' style=' display:none ' class="mui-table-view mui-table-view-chevron mui-table-view-inverted">							
+							<%- partial('./_repairtype', {collection:repairtypes, as:'repairtype'}) %>
+					</ul>
+				</div>
+			</div>
+	</aside>
+		
+		
+	<div class="mui-inner-wrap">	
+	<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+		<ul class="mui-table-view" style="margin-top: 5px;">
+			<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-body" style="margin-top: 5px;font-size: 14px;color:#007aff;">
+							提示：请点击右侧按钮扫描
+							<p  style="font-size: 14px;color:#007aff;">资产编号识别报修类别！</p>
+					</div>
+					
+					<a href="javascript:;" class="mui-btn mui-btn-primary" id="scanQRCode">扫描资产编号</a>
+			</li>
+		</ul>
+		<form id='create_form' action='/repair/create' method='post'>
+		
+		<input id='repairType' name='repairType' type='hidden'  value=<%= typeof(repaircurrent.repairtype) !== 'undefined' && repaircurrent.repairtype || '' %>  >
+		<input id='costcenter' name='costcenter' type='hidden'  value=<%= typeof(repaircurrent.costcenter) !== 'undefined' && repaircurrent.costcenter || '' %>   >
+		<input id='signid' name='signid' type='hidden'  value=<%= typeof(repaircurrent.signid) !== 'undefined' && repaircurrent.signid || '' %>   >
+		<input id='code' name='code' type='hidden'  value=<%= typeof(repaircurrent.code) !== 'undefined' && repaircurrent.code || '' %>   >
+		<input type='hidden' name='_csrf' value='<%= csrf %>'>
+		
+		<ul class="mui-table-view" style="margin-top: 3px;">
+			<li  id='costcentercf' class="mui-table-view-cell mui-input-row" style="margin-left: -15px;">
+				<a class="mui-navigate-right" id="centershow">
+					<label>成本中心:</label>
+					<input id='costcentername' name='costcentername' readOnly="true" style="border: none;" type="text" class="mui-input-clear"  value= '' >
+				</a>
+			</li>
+			<li id='repairTypenamecf' class="mui-table-view-cell mui-input-row" style="margin-left: -15px;">
+				<a class="mui-navigate-right" id="sortshow">
+					<label>报修类别:</label>				
+					<input id='repairtypename' name='repairtypename' readOnly="true" style="border: none;"  type="text" class="mui-input-clear"  value= '' >
+				</a>
+			</li>
+			
+			<div class="mui-input-row">
+				<label>报修人员:</label>
+				<input id='repairname' name='repairname' type="text" class="mui-input-clear" placeholder="报修人员姓名" value= <%= repaircurrent.repairname  %> >
+			</div>	
+			<div class="mui-input-row">
+				<label>报修电话:</label>
+				<input id='repairtel' name='repairtel' type="text" class="mui-input-clear" placeholder="报修人员手机号码" value= <%= repaircurrent.repairtel  %>>
+			</div>
+			<div class="mui-input-row">
+				<label>报修邮箱:</label>
+				<input id='repairmail' name='repairmail' type="text" class="mui-input-clear" placeholder="报修人员邮箱" value= <%= repaircurrent.repairmail  %>>
+			</div>
+			<div class="mui-input-row">
+				<label>故障描述:</label>
+				<textarea id='repairContent' name='repairContent' id="textarea" rows="3" placeholder="详细描述故障"></textarea>
+			</div>
+			<div class="mui-input-row">
+				<label>图片上传:</label>	
+			</div>
+			<div  class="mui-input-row image">
+				<!--<input id="addimage" style="margin-left:15px;max-width: 80px;height: 80px" accept="image/jpg,image/jpeg,image/png,image/gif" multiple/>	-->
+				<img  class="mui-media-object mui-pull-left" style="margin-left:15px;max-width: 80px;height: 80px"src="../public/img/addimage.png"  id="addimage0">
+				<img  class="mui-media-object mui-pull-left" style="margin-left:15px;max-width: 80px;height: 80px"src="../public/img/addimage.png"  id="addimage1">
+				<img  class="mui-media-object mui-pull-left" style="margin-left:15px;max-width: 80px;height: 80px"src="../public/img/addimage.png"  id="addimage2">
+				
+				<input id='image' name='image' type='hidden'  value=''  >	
+					
+			</div>
+			<hr />
+			<button type="button" id='submitfrom' class="mui-btn mui-btn-primary mui-btn-block" ata-loading-text="提交中"  value="提交保存"  style="border-radius: 0px;">提交保存</button>		
+		</ul>	
+			
+				
+		</from>
+	</div> 
+	</div>
+	</div>
+    </div>
+	<script src="../public/javascripts/mui.min.js"></script>
+	<script src="../public/javascripts/zepto.min.js"></script>
+	<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+	<!--<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>-->
+	<script type="text/javascript">
+	var images = {serverId: []};
+		// 使用 jq 动态加载 微信配置
+		$.ajax({
+		    url: '/getsignature' ,// 此处url请求地址需要替换成你自己实际项目中服务器数字签名服务地址		        
+		    type: 'post',
+		    data: {
+		        url: location.href.split('#')[0] // 将当前URL地址上传至服务器用于产生数字签名
+		    },
+		    success: function(r){
+			// 开始配置微信JS-SDK
+		    wx.config({
+		        debug: false,
+		        appId: r.appId,
+		        timestamp: r.timestamp,
+		        nonceStr: r.nonceStr,
+		        signature: r.signature,
+		        jsApiList: ['checkJsApi','chooseImage','scanQRCode','previewImage','uploadImage','downloadImage']
+		    });
+		  },
+		  error: function(xhr, type){
+		    alert('微信js-sdk认证失败!')
+		  }		    
+		});
+			//通过ready接口处理成功验证
+			wx.ready(function(){				
+				// config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后
+				//  扫描二维码并返回结果
+				document.getElementById('scanQRCode').addEventListener('tap', function() { 
+				// document.querySelector('#scanQRCode').onclick = function () {
+				    wx.scanQRCode({
+				      needResult: 1,
+				      desc: 'scanQRCode desc',
+				      success: function (res) {
+//				        alert(JSON.stringify(res));
+				        window.location.href='/repair/create?code=12345678'; 
+				      }
+				    });
+				  });
+	
+	//选择图片
+	//document.getElementsById('addimage').addEventListener('tap', function() {
+	mui(".image").on('tap','.mui-media-object',function(){
+		wx.chooseImage({
+			count: 3, // 默认9
+			sizeType: ['compressed'], // 可以指定是原图还是压缩图，默认二者都有
+			sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+			success: function(res) {
+				var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+
+				var i = 0, length = localIds.length;
+				function upload() { 
+				      wx.uploadImage({
+				        localId: localIds[i],
+				        success: function (res) {
+				        	document.getElementById('addimage'+i).src = localIds[i];
+				          i++;
+				          //alert('已上传：' + i + '/' + length);
+				          images.serverId.push(res.serverId);
+				          
+				          if (i < length) {
+				            upload();
+				          }
+				        },
+				        fail: function (res) {
+				          alert(JSON.stringify(res));
+				        }
+				      });
+				  }
+   				 upload();
+                
+			}
+		});
+		//alert(images.serverId);
+		
+	});	  
+	
+	
+				
+			});
+//	提交表单		验证
+	document.getElementById('submitfrom').addEventListener('tap', function() {
+		if (document.getElementById('costcenter').value ===''){
+			alert('请选择成本中心！');
+			return;
+		}
+		if (document.getElementById('repairType').value ===''){
+			alert('请选择维修类型！');
+			return;
+		}
+		document.getElementById('image').value=images.serverId;
+		document.getElementById('create_form').submit();
+		
+	})
+
+		
+	
+		</script>
+<script type="text/javascript" charset="utf-8">
+mui.init();
+//侧滑容器父节点
+var offCanvasWrapper = mui('#offCanvasWrapper');
+//主界面容器
+var offCanvasInner = offCanvasWrapper[0].querySelector('.mui-inner-wrap');
+//菜单容器
+var offCanvasSide = document.getElementById("offCanvasSide");
+//移动效果是否为整体移动
+var moveTogether = false;
+//主界面‘显示侧滑菜单’按钮的点击事件
+document.getElementById('costcentercf').addEventListener('tap', function() {
+	document.getElementById('costcenterselect').style.display="inline";
+	document.getElementById('repairtypeselect').style.display="none";
+	offCanvasWrapper.offCanvas('show');
+});
+document.getElementById('repairTypenamecf').addEventListener('tap', function() {
+	document.getElementById('costcenterselect').style.display="none";
+	document.getElementById('repairtypeselect').style.display="inline";
+	offCanvasWrapper.offCanvas('show');
+});
+//主界面和侧滑菜单界面均支持区域滚动；
+mui('#offCanvasSideScroll').scroll();
+mui('#offCanvasContentScroll').scroll();
+
+mui('#repairtypeselect').on('tap', 'a', function() {
+	document.getElementById('repairtypename').value = this.name;
+	document.getElementById('repairType').value = this.id;
+	offCanvasWrapper.offCanvas('close');
+});
+//选择成本中心
+mui('#costcenterselect').on('tap', 'a', function() {
+	document.getElementById('costcentername').value = this.name;
+	document.getElementById('costcenter').value = this.id;
+	offCanvasWrapper.offCanvas('close');
+});	
+						
+	
+    
+    </script>
+
+		
+	</body>
+</html>
+
+

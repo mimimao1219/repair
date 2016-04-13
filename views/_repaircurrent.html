@@ -1,0 +1,24 @@
+<ul class="mui-table-view" style="margin-top:5px;">
+	<li class="mui-table-view-cell">
+		<lable>报修时间:</lable>
+		<span><%=repairCurrent.signdate %></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<lable>报修状态:</lable>
+		<span style="color:#007aff;"><%=repairCurrent.repairStatu %></span>
+	</li>
+	<li class="mui-table-view-cell">
+		<a href="/<%=repairCurrent._id%>/edit?usertype=<%=usertype%>" class="mui-navigate-right">
+			<p>
+				<lable style="color:#000000;">成本中心：</lable>
+				<span style="color:#007aff;"><%= repairCurrent.costcentername %></span>
+			</p>
+			<p>
+				<lable style="color:#000000;">报修类别：</lable>
+				<span style="color:#007aff;"><%= repairCurrent.repairtypename %></span>
+			</p>
+			<p>
+				<lable style="color:#000000;">报修人员：</lable>
+				<span style="color:#007aff;"><%= repairCurrent.repairname %></span>
+			</p>
+		</a>
+	</li>
+</ul>
