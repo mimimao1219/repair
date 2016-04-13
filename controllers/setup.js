@@ -1,5 +1,4 @@
 
-
 var validator = require('validator');
 //var at           = require('../common/at');
 var RepairCurrentModel = require('../models').RepairCurrent;
@@ -21,7 +20,7 @@ var http = require('http');
 var fs = require('fs');
 
 
-//维修人员列表
+//维修人员列表 的
 exports.comtactlist = function (req, res, next) {	
  var userid= req.query.userid;
  
