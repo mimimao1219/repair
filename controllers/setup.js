@@ -82,9 +82,6 @@ exports.comtactdel = function (req, res, next) {
 
 }
 
-
-
-
 exports.list = function (req, res, next) {		
   var usertype='';
   usertype= req.query.usertype;
