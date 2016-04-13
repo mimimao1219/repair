@@ -1,6 +1,8 @@
 bback
 ./mongodump -h 127.0.0.1:27017 -d repair_dev -o /Users/lee/git/fyrepair/
 
+./mongorestore -h 127.0.0.1:27017 -d repair_dev –directoryperdb /Users/lee/git/fyrepair/repair_dev/
+
 [![build status][travis-image]][travis-url]
 [![Coverage Status][coverage-image]][coverage-url]
 [![David deps][david-image]][david-url]
