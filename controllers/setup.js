@@ -23,9 +23,10 @@ var fs = require('fs');
 //维修人员列表 的
 exports.comtactlist = function (req, res, next) {	
  var userid= req.query.userid;
- 
+ userid='58';
+ res.locals.userid =userid;
  var events = ['repaircompanys','repairtypes'];
-  var ep = EventProxy.create(events, function (repairCurrents,repairCurrentsing,repairfinishs) {
+  var ep = EventProxy.create(events, function (repaircompanys,repairtypes) {
     res.render('setup/comtactlist', {
       repaircompanys: repaircompanys,
       repairtypes: repairtypes
@@ -38,7 +39,8 @@ exports.comtactlist = function (req, res, next) {
 }
 //增加更新维修人员
 exports.comtactsave = function (req, res, next) {	
- if (req.body.id=='') {
+
+ if (req.body.tid=='') {
     var RepairCompany = new RepairCompanyModel();
     RepairCompany.companyid   = validator.trim(req.body.companyid);
     RepairCompany.comtact   = validator.trim(req.body.comtact);
@@ -53,7 +55,7 @@ exports.comtactsave = function (req, res, next) {
       		res.redirect('/setup/comtactlist');
       	});
   }else{
-  	RepairCompanyModel.findOne({_id:validator.trim(req.body.id) }, null, function (err, RepairCompany) {
+  	RepairCompanyModel.findOne({_id:validator.trim(req.body.tid) }, null, function (err, RepairCompany) {
   	RepairCompany.companyid   = validator.trim(req.body.companyid);
     RepairCompany.comtact   = validator.trim(req.body.comtact);
     RepairCompany.comtact_tel     = validator.trim(req.body.comtact_tel);
@@ -81,6 +83,8 @@ exports.comtactdel = function (req, res, next) {
       	});
 
 }
+
+
 
 exports.list = function (req, res, next) {		
   var usertype='';

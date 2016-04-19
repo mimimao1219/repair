@@ -14,6 +14,11 @@
 		.mui-control-content .mui-loading {
 			margin-top: 50px;
 		}
+		#topPopover {position: fixed;}
+		.mui-popover {height: 127px;}
+		.mui-table-view-cell a:active{background:#efeff4; display: block; color: #007aff;}
+		.mui-popover .mui-scroll-wrapper {margin: 0px 0; }
+		.mui-table-view-cell:after{right: 15px;}
 	</style>
      
 </head>
@@ -32,15 +37,21 @@
 					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
 					<% } %>
 					<% if (usertype === '2') { %>
+					<div>
+						<a href="#topPopover"  id="menu"  class="mui-pull-right">
+							<button  class="mui-btn mui-btn-primary mui-icon mui-icon-arrowdown  mui-right" style="padding: 10px 25px; font-size: 16px;">维修管理 </button>
+						</a>
+				    </div>
 					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
 							姓名：赵亮亮
 					</div>
 					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
 							所在单位：信息中心
 					</div>	
-					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
+					
+					<!--<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
 					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">维修公司管理</a>
-					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">维修类型管理</a>
+					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">维修类型管理</a>-->
 					<% } %>
 					<% if (usertype === '3') { %>
 					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
@@ -49,11 +60,27 @@
 					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
 							
 					</div>	
-
+	                <a href="/setup/comtactlist" class="mui-btn mui-btn-primary" id="comtactlist">维修人员管理</a>
 					<% } %>
 			</li>
 		</ul>
-		
+		<div id="topPopover" class="mui-popover" style="width: 132px;">
+						<div class="mui-popover-arrow"></div>
+							<div class="mui-scroll-wrapper">
+								<div class="mui-scroll">
+									<ul class="mui-table-view">
+										<li class="mui-table-view-cell" style="padding-right: 15px;"><a href="#"  onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">维修类型管理</a>
+										</li>
+										<li class="mui-table-view-cell"><a href="#" onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">维修公司管理</a>
+										</li>
+										<li class="mui-table-view-cell"><a href="/repair/create" onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">申请报修</a>
+										</li>
+										
+									</ul>
+								</div>
+						</div>
+
+		</div>
 		<div id="slider" class="mui-slider"style="margin-top: 0px;position: fixed;">
 			 			
 				<% if (usertype === '1') { %>	
@@ -145,6 +172,13 @@
 				$('.mui-scroll-wrapper').scroll({
 					indicators: true //是否显示滚动条
 				});
+			mui('.mui-scroll-wrapper').scroll();
+			mui('body').on('shown', '.mui-popover', function(e) {
+				//console.log('shown', e.detail.id);//detail为当前popover元素
+			});
+			mui('body').on('hidden', '.mui-popover', function(e) {
+				//console.log('hidden', e.detail.id);//detail为当前popover元素
+			});
 //				var html2 = '';
 //
 //				var sliderSegmentedControl = document.getElementById('sliderSegmentedControl');
