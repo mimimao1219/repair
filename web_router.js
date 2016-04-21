@@ -20,7 +20,12 @@ router.post('/repair/update',   repair.update);//更新维修记录
 //router.get('/search', search.index);
 
 router.get('/setup/comtactlist',   setup.comtactlist);//维修人员列表
-router.post('/setup/comtactsave',  setup.comtactsave); //上传图片
+router.post('/setup/comtactsave',  setup.comtactsave); //维修人员更新保存
+
+router.get('/setup/typelist',   setup.typelist);//维修类型列表
+router.post('/setup/typesave',  setup.typesave); //维修类型更新保存
+router.get('/setup/companylist',   setup.companylist);//维修公司列表
+router.post('/setup/companysave',  setup.companysave); //维修公司更新保存
 
 // 微信签名
 router.post('/getsignature', getSignature);

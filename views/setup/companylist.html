@@ -41,58 +41,47 @@
 	<!--保修公司选择-->
 	<div class="mui-content">
 
-		<form id='edit_form' action='/setup/comtactsave' method='post'>
+		<form id='edit_form' action='/setup/companysave' method='post'>
 			<input type='hidden' name='_csrf' value='<%= csrf %>'>
 		    <input type='hidden' id='repairtypename' name='repairtypename' value=''>
 		    	<input type='hidden' id='tid' name='tid' value=''>
-		    	<input type='hidden' id='companyid' name='companyid' value='<%= userid %>'>
+		    	<input type='hidden' id='managerid' name='managerid' value='<%= userid %>'>
 			
 			<div class="btn-bg" >
-			<a href="/setup/comtactlist"> <button  type="button"  class="mui-btn mui-btn-primary mui-btn-outlined btn-size mui-icon mui-icon-plus" style="color: #FFFFFF;">新增 </button></a>
+			<a href="/setup/companylist"> <button  type="button"  class="mui-btn mui-btn-primary mui-btn-outlined btn-size mui-icon mui-icon-plus" style="color: #FFFFFF;">新增 </button></a>
 			<span class="btn-span" >&nbsp;&nbsp;|&nbsp;&nbsp;</span>
 			<button  type="submit" class="mui-btn mui-btn-primary mui-btn-outlined btn-size1 mui-icon mui-icon-checkmarkempty " style="color: #FFFFFF;">保存</button>
 			</div>
 			
 			<div style="border-bottom: 1px solid #0062CC; padding-bottom: 20px;background-color: #FFFFFF;">
 			<ul class="mui-table-view2">
-					
+					<li class="mui-input-row  mui-input-rows" >
+						    	<label  style="padding-right: 0px;width: 37%;">维修公司：</label>
+								<input id='name' name='name'  value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
+					</li>
 					<li class="mui-input-row  mui-input-rows" >
 							    <label  style="padding-right: 0px;width: 37%;">联系人：</label>
-								<input id='comtact' name='comtact' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;width: 60%; padding-left: 15px; ">
+								<input id='linkname' name='linkname' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;width: 60%; padding-left: 15px; ">
 				    </li>
 					<li class="mui-input-row  mui-input-rows" >
-						    	<label  style="padding-right: 0px;width: 37%;">电话：</label>
-								<input id='comtact_tel' name='comtact_tel' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px;">
-						</li>
-						<li class="mui-input-row  mui-input-rows" >
 						    	<label  style="padding-right: 0px;width: 37%;">手机：</label>
-								<input id='comtact_mob' name='comtact_mob' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
-						</li>
-						<li class="mui-input-row  mui-input-rows" >
+								<input id='tel' name='tel' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
+					</li>
+					<li class="mui-input-row  mui-input-rows" >
 						    	<label  style="padding-right: 0px;width: 37%;">邮件：</label>
-								<input id='comtact_mail' name='comtact_mail'  value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
-						</li>
+								<input id='mail' name='mail'  value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
+					</li>
 						<li class="mui-input-row  mui-input-rows" >
 						    	<label  style="padding-right: 0px;width: 37%;">报修项目：</label>
 								<!--<input id='repairtypename' name='repairtypename'  value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px;">-->
-						        <select id='repairtype' name='repairtype' class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">
+						        <select multiple="true" id='repairtype' name='repairtype' class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">
 									<option value="">请选择...</option>
-									<%if (repaircompanys!=null){%>
+									<%if (repairtypes!=null){%>
 							           <%- partial('./_optiontype', {collection:repairtypes, as:'repairtype'}) %>
 				                    <%}%>	
 								</select>
 						</li>
-						<li class="mui-input-row  mui-input-rows" >
-						    	<label  style="padding-right: 0px;  width: 37%;">联系人类型：</label>
-								<!--<input id='msk1' name='msk1' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">-->
-						        <select id='msk1' name='msk1' class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">
-									<option value="">请选择...</option>
-									<option value="1">工程师</option>
-									<option value="2">维修主管</option>
-									<option value="3">总经理</option>
-								</select>
-								
-						</li>
+
 					
 			</ul>
 		</div>
@@ -109,7 +98,7 @@
 			<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="background: #FFFFFF;margin-top: 0px;">
 				<li class="mui-table-view-cells mui-input-row" style="background-color:#ececec ; list-style: none;" >
 
-					<span class="row1" >联系人/手机</span>	
+					<span class="row1" >维修公司</span>	
 					<span class="row1">报修项目</span>
 				</li>
 			</div>
@@ -120,8 +109,8 @@
 		<div id="scroll1" class="mui-scroll-wrapper">
 			<div class="mui-scroll">
 				<ul class="mui-table-view" style="margin-top:5px;">
-				<%if (repaircompanys!=null){%>
-							<%- partial('./_comtact', {collection:repaircompanys, as:'comtact'}) %>
+				<%if (companys!=null){%>
+							<%- partial('./_company', {collection:companys, as:'company'}) %>
 				<%}%>	
 				
 				 </li>
@@ -153,15 +142,13 @@
 
 //选择维修人
 mui('#comtactselect').on('tap', 'a', function() {
-	document.getElementById('comtact').value = this.dataset.comtact;
-	document.getElementById('comtact_tel').value = this.dataset.comtact_tel;
-	document.getElementById('comtact_mob').value = this.dataset.comtact_mob;
-	document.getElementById('comtact_mail').value = this.dataset.comtact_mail;
+	document.getElementById('name').value = this.dataset.name;
+	document.getElementById('tel').value = this.dataset.tel;
+	document.getElementById('linkname').value = this.dataset.linkname;
+	document.getElementById('mail').value = this.dataset.mail;
 	document.getElementById('repairtype').value = this.dataset.repairtype;
-	document.getElementById('repairtypename').value = this.dataset.repairtypename;
 	document.getElementById('tid').value = this.dataset.tid;
-	document.getElementById('msk1').value = this.dataset.msk1;
-	document.getElementById('companyid').value = this.dataset.companyid;
+
 	
 });	
 $("#repairtype").change(function() { 	

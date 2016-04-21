@@ -6,7 +6,7 @@ var ObjectId  = Schema.ObjectId;
 var RepairTypeSchema = new Schema({ 
   repairtype: { type: Number },  //报修项目id
   repairname: { type: String },  //报修项目
-  orderindex: { type: Number, default: 0},  //排序
+  orderindex: { type: Number, default: 2000},  //排序
   statu: { type: Number , default:'1'},  //默认维修完成天数  默认值1有效
   msk1: { type: String },  
   msk2: { type: String },  
