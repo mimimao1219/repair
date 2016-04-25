@@ -1,5 +1,8 @@
 var mongoose   = require('mongoose');
-//var UserModel  = mongoose.model('User');
+
+var UserModel = require('../models').User;
+var request = require('request');
+var tools = require('../common/tools')
 //var Message    = require('../proxy').Message;
 var config     = require('../config');
 var eventproxy = require('eventproxy');
@@ -8,10 +11,69 @@ var eventproxy = require('eventproxy');
 
 // 验证用户是否有权限
 exports.authUser = function (req, res, next) {
-	
+	  if (!req.session || !req.session.user) {
+		  
+		  
+	    return res.status(403).send('forbidden!');
+	  }
 
- next();
+     next();
 };
+
+exports.getIdentify =function (openid,config) {
+    var url = 'http://www.spdbcloud.com/WChart/Identify?open_id=' + openid + '&pid='+config.pftoken ;
+    request.get(url, function(error, response, body) {
+        if (error) {
+            return res.status(403).send('forbidden!');
+        }
+        else {
+            try {
+                var flag = JSON.parse(body).flag;
+                return flag;
+            }
+            catch (e) {
+              	return e;
+            }
+        }
+    });
+}
+
+exports.getUserInfo =function (openid,config) {
+    var data='{OpenID:' + openid + ',Token:'+config.pftoken+',Pid:'+config.weixingzh+'}';
+    var queryStr=tools.myCipheriv(data,config);
+    var options = {
+    		headers: {"Connection": "close"},
+    	    url: 'http://www.spdbcloud.com/api/WChartUserInfo',
+    	    method: 'POST',
+    	    json:true,
+    	    body: {QueryStr:queryStr,UID :'0',ReqCode :"0"}
+    	};
+    	request(options, function(error, response, body) {
+    		if (!error && response.statusCode == 200) {
+    			console.log(body);
+    			return tools.myDecipheriv(JSON.parse(body).ResultData); 			
+    		}
+    	});    
+}
+
+exports.getAssets =function (AssetsNo,config) {
+    var data='{AssetsNo:' + AssetsNo + ',Token:'+config.pftoken+'}';
+    var queryStr=tools.myCipheriv(data,config);
+    var options = {
+    		headers: {"Connection": "close"},
+    	    url: 'http://www.spdbcloud.com/api/WChartAssets',
+    	    method: 'POST',
+    	    json:true,
+    	    body: {QueryStr:queryStr,UID :'0',ReqCode :"0"}
+    	};
+    	request(options, function(error, response, body) {
+    		if (!error && response.statusCode == 200) {
+    			console.log(body);
+    			return tools.myDecipheriv(JSON.parse(body).ResultData);   			
+    		}
+    	});    
+}
+
 
 
 function gen_session(user, res) {

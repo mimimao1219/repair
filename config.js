@@ -29,10 +29,6 @@ var config = {
   site_static_host: '', // 静态文件存储域名
   // 设置域名
   host: 'localhost',
-  // 默认的Google tracker ID，自有站点请修改，申请地址：http://www.google.com/analytics/
-  google_tracker_id: '',
-  // 默认的cnzz tracker ID，自有站点请修改
-  cnzz_tracker_id: '',
 
   // mongodb 配置
   db: 'mongodb://127.0.0.1/repair_dev',
@@ -48,10 +44,6 @@ var config = {
   // 程序运行的端口
   port: 3000,
 
-  // 话题列表显示的话题数量
-  list_topic_count: 20,
-
-  
 
   // 邮箱配置
   mail_opts: {
@@ -74,21 +66,9 @@ var config = {
   // oneapm 是个用来监控网站性能的服务
   oneapm_key: '',
 
-  // 下面两个配置都是文件上传的配置
-
-  // 7牛的access信息，用于文件上传
-//qn_access: {
-//  accessKey: 'CqskPc4_NwhHv3cszy_zlI7IQ7rCuJCF9LbnBaxR',
-//  secretKey: 'iFuKByvYDUtVhwGw_yV7OnDTKz8WuIqjzB_a5FIu',
-//  bucket: 'qiniu1',
-//  origin: 'http://7xpwp1.com1.z0.glb.clouddn.com',
-//  // 如果vps在国外，请使用 http://up.qiniug.com/ ，这是七牛的国际节点
-//  // 如果在国内，此项请留空
-//  uploadURL: '',
-//},
 
   // 文件上传配置
-  // 注：如果填写 qn_access，则会上传到 7牛，以下配置无效
+
   upload: {
     path: path.join(__dirname, 'public/upload/'),
     url: '/public/upload/'
@@ -129,17 +109,14 @@ var config = {
         appToken: 'mimimao',
         jsdkToken: '',
  	},
+ //浦发接口
+ 	pftoken:'FaultRepair',
+ 	weixingzh:'vSpdbCloud',
+ 	key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
+ 	iv:'6iQsiXGB@w>K$g\a',
 
-  // 极光推送
-  jpush: {
-    appKey: 'YourAccessKeyyyyyyyyyyyy',
-    masterSecret: 'YourSecretKeyyyyyyyyyyyyy',
-    isDebug: false,
-  },
 
-  create_post_per_day: 1000, // 每个用户一天可以发的主题数
-  create_reply_per_day: 1000, // 每个用户一天可以发的评论数
-  visit_per_day: 1000, // 每个 ip 每天能访问的次数
+
 };
 
 if (process.env.NODE_ENV === 'test') {

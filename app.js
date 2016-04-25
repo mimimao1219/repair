@@ -83,6 +83,15 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 app.use(require('method-override')());
 app.use(require('cookie-parser')(config.session_secret));
 app.use(compress());
+app.use(session({
+	  secret: config.session_secret,
+	  cookie:{
+		  maxAge: 1000*60*30;
+		  }
+	  resave: true,
+	  saveUninitialized: true,
+	}));
+
 //用户授权
 app.use(auth.authUser);
 

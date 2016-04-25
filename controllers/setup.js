@@ -129,7 +129,8 @@ exports.typesave = function (req, res, next) {
 			});	
       	});	
   	});	
-  };
+  });
+};
 };
 
 
@@ -138,7 +139,7 @@ exports.companylist = function (req, res, next) {
  var userid= req.query.userid;
  userid='11003720';
  res.locals.userid =userid;
- var events = ['myrepairtypes','repairtypes'];
+ var events = ['companys','repairtypes'];
   var ep = EventProxy.create(events, function (companys,repairtypes) {
     res.render('setup/companylist', {
       companys: companys,
@@ -147,12 +148,54 @@ exports.companylist = function (req, res, next) {
   });
  
   RepairManagerModel.distinct('repairtype',{managerid:userid }, function (err,types) {
-	  CompanyModel.find({repairtype:types }, null,{sort: 'name'}, ep.done('companys'));
+	  CompanyModel.find({repairtype:{$in:types} }, null,{sort: 'name'}, ep.done('companys'));
   });
   
   RepairManagerModel.find({managerid:userid }, null,{sort: 'repairname'}, ep.done('repairtypes'));
 
 }
+
+//增加更新维修公司
+exports.companysave = function (req, res, next) {	
+
+ if (req.body.tid=='') {
+    var Company = new CompanyModel();
+    Company.id   = CountersModel.findAndModify({update:{$inc:{'seq':1}}, query:{"name":"company"}, new:true}).seq;
+    Company.name   = validator.trim(req.body.name);
+    Company.tel   = validator.trim(req.body.tel);
+    Company.linkname   = validator.trim(req.body.linkname);
+    Company.mail   = validator.trim(req.body.mail);
+    Company.repairtype   = validator.trim(req.body.repairtype).split();
+    Company.save(function (err, Company) {
+     	RepairTypeModel.find({repairtype:{$in:Company.repairtype}}).exec(function (err, RepairTypes) {
+    		RepairTypes.forEach(function (RepairType) { 	
+    			RepairType.companyid=_.union(RepairType.companyid,Company.id.split());
+    			RepairType.save(function (err, RepairType) { 
+      		res.redirect('/setup/companylist');
+     	  });
+    		});
+     	});
+      	});
+  }else{
+	  CompanyModel.findOne({_id:validator.trim(req.body.tid) }, null, function (err, RepairType) {  
+		  Company.name   = validator.trim(req.body.name);
+		  Company.tel   = validator.trim(req.body.tel);
+		  Company.linkname   = validator.trim(req.body.linkname);
+		  Company.mail   = validator.trim(req.body.mail);
+		  Company.repairtype   = validator.trim(req.body.repairtype).split();
+		  CompanyModel.save(function (err, Company) {
+			  RepairTypeModel.find({repairtype:{$in:Company.repairtype}}).exec(function (err, RepairTypes) {
+		    	  RepairTypes.forEach(function (RepairType) { 	
+		    			RepairType.companyid=_.union(RepairType.companyid,Company.id.split());
+		    			RepairType.save(function (err, RepairType) { 
+		      		res.redirect('/setup/companylist');
+		     	  });
+		    		});
+		     	});	
+  	});	
+  });
+};
+};
 
 
 
