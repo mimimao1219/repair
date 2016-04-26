@@ -9,6 +9,10 @@ var router = express.Router();
 var createSignature = signature.getSignature(config.weixin);
 //模拟用户
 router.get('/',repair.userlist);
+
+router.get('/sign',repair.sign);
+
+router.get('/login',repair.login);
 //维修管理列表
 router.get('/list',repair.list);
 //申请维修管理

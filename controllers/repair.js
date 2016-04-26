@@ -9,6 +9,7 @@ var RepairCompanyModel = require('../models').RepairCompany;
 var RepairManagerModel = require('../models').RepairManager;
 var RepairTypeModel = require('../models').RepairType;
 var CompanyModel = require('../models').Company;
+var UserModel = require('../models').User;
 var EventProxy   = require('eventproxy');
 var tools        = require('../common/tools');
 var store        = require('../common/store');
@@ -20,13 +21,65 @@ var moment = require('moment');
 var http = require('http');
 var fs = require('fs');
 
-/**
- * repair list page
- *
- * @param  {HttpRequest} req
- * @param  {HttpResponse} res
- * @param  {Function} next
- */
+exports.sign = function (req, res, next) {
+	req.session.yzm='4561';
+	var openid= req.query.openid;
+	res.render('sign',{openid:openid});	
+}
+exports.login = function (req, res, next) {
+	var openid = validator.trim(req.body.openid);
+	var mob = validator.trim(req.body.mob);
+	var yzm = validator.trim(req.body.yzm);
+	var usertype = validator.trim(req.body.usertype);
+    if (usertype=='3'){
+     	CompanyModel.findOne({tel:mob }, null, function (err, Company) {
+     		if (Company) {
+     		var myUser = new UserModel();
+			myUser.OpenId= openid;
+			myUser.NickName= Company.linkname;
+			//myUser.UserPhotoUrl= user.UserPhotoUrl;
+			myUser.Pid= config.weixingzh;
+			myUser.UserId= Company.id;
+			myUser.UserName= Company.name;
+			myUser.OrgName= Company.name;
+			//myUser.FixedPhone= Company.FixedPhone;
+			myUser.CellPhone= mob;
+			myUser.Email= Company.mail;
+			myUser.usertype=usertype;
+			req.session.user=myUser;
+			myUser.save();
+			res.redirect('/);
+     		}else{
+     			res.redirect('/sign?openid='+openid);
+     		}
+     	});
+    }
+    if (usertype=='4'){
+    	RepairCompanyModel.findOne({comtact_mob:mob }, null, function (err, Company) {
+     		if (Company) {
+     		var myUser = new UserModel();
+			myUser.OpenId= openid;
+			myUser.NickName= Company.comtact;
+			//myUser.UserPhotoUrl= user.UserPhotoUrl;
+			myUser.Pid= config.weixingzh;
+			myUser.UserId= Company.id;
+			myUser.UserName= Company.comtact;
+			myUser.OrgName= Company.comtact;
+			//myUser.FixedPhone= Company.FixedPhone;
+			myUser.CellPhone= mob;
+			myUser.Email= Company.comtact_mail;
+			myUser.usertype=usertype;
+			req.session.user=myUser;
+			myUser.save();
+			res.redirect('/);
+     		}else{
+     			res.redirect('/sign?openid='+openid);
+     		}
+     	});
+    }
+
+}
+
 exports.userlist = function (req, res, next) {
 	res.render('userlist');	
 }

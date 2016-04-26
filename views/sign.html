@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../public/stylesheets/mui.min.css" rel="stylesheet" />
+	
+		<style>
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			.mui-input-group label {
+				width: 36%;
+			}
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 64%;
+			}
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			.mui-btn {
+				padding: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">绑定手机登陆</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="mui-radio">
+					<label>维修公司:</label>
+						<input name="usertype" type="radio" >
+							<label>维修人:</label>
+						<input name="usertype" type="radio">
+					
+				</div>
+				<div class="mui-input-row">
+					<label>手机号：</label>
+					<input id='mob' name='mob' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+				</div>
+				<div class="mui-input-row">
+					<label>验证码：</label>
+					<input id='yzm' name='yzm' type="text" class="mui-input-clear mui-input" placeholder="请输入验证码">
+				</div>
+				
+				
+			</form>
+			<div class="mui-content-padded">
+				<button id='reg' class="mui-btn mui-btn-block mui-btn-primary">提交</button>
+			</div>
+			
+		</div>
+		<script src="../public/javascripts/mui.min.js"></script>
+		
+		<script>
+			
+		</script>
+	</body>
+
+</html>

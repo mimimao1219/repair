@@ -6,10 +6,10 @@ var auth = require('../middlewares/auth');
 //	console.log(query);
 //});
 
-auth.getAssets('005800000000032447',config ,function (e,query) {
-	
-	console.log(query);
-});
+//auth.getAssets('005800000000032447',config ,function (e,query) {	
+//	console.log(query);
+//});
+
 //加密后的结果:yffobFj2ybyM5ApDa6Fs+2HKsKQQxkptG4O11JOdVCI0dpvm+Jm+igc2dOj3NJxs
 
 //counters = new CountersModel({name : 'company'});

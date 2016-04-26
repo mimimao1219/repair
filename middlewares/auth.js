@@ -1,6 +1,9 @@
 var mongoose   = require('mongoose');
 
 var UserModel = require('../models').User;
+var RepairManagerModel = require('../models').RepairManager;
+var CompanyModel = require('../models').Company;
+var RepairCompanyModel = require('../models').RepairCompany;
 var request = require('request-json');
 var tools = require('../common/tools')
 //var Message    = require('../proxy').Message;
@@ -13,33 +16,64 @@ var eventproxy = require('eventproxy');
 exports.authUserOne = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
 		 var openid = req.query.open_id;
-		 UserModel.findOne({OpenId:openid},function(user) {
+		 UserModel.findOne({OpenId:openid},function(e,user) {
 			 if (user) {
 				 req.session.user=user;
+				 return next(); 
 			 }else{	
 				 return next(); 
 			 }	 
 		 });  
 	  }else{
-		  if (req.session.user.usertype==='1'){
-			  
-		  }
-
-	  }   
+		  return next();  
+	  }	  
 };
 //验证用户第二步
 exports.authUserTwo = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
 		 var openid = req.query.open_id;
-		 UserModel.findOne({OpenId:openid},function(user) {
+		 getUserInfo(openid,config,function(e,user) {
+			 
 			 if (user) {
-				 req.session.user=user;
+				var myUser = new UserModel();
+				myUser.OpenId= user.OpenId;
+				myUser.NickName= user.NickName;
+				myUser.UserPhotoUrl= user.UserPhotoUrl;
+				myUser.Pid= user.Pid;
+				myUser.UserId= user.UserId;
+				myUser.UserName= user.UserName;
+				myUser.OrgName= user.OrgName;
+				myUser.FixedPhone= user.FixedPhone;
+				myUser.CellPhone= user.CellPhone;
+				myUser.Email= user.Email;
+				 RepairManagerModel.findOne({OpenId:openid},function(e,manager) {
+					 if (manager){
+						 myUser.usertype='2'; 
+						 req.session.user=myUser;
+						 myUser.save();
+						 return next();
+					 }else{
+						 myUser.usertype='1'; 
+						 req.session.user=myUser;
+						 myUser.save();
+						 return next();
+					 }
+				 });
+				 
 			 }else{	
-				 next(); 
+				 return next();  
 			 }	 
 		 });  
 	  }else{
-		  next(); 
+		  return next(); 
+	  }   
+};
+//验证用户第三步
+exports.authUserThree = function (req, res, next) {
+	  if (!req.session || !req.session.user) {
+		  res.redirect('/sign?openid='+req.query.open_id);
+	  }else{
+		  return next(); 
 	  }   
 };
 
@@ -112,63 +146,3 @@ exports.getAssets =function (AssetsNo,config,cb) {
 }
 
 
-
-function gen_session(user, res) {
-  var auth_token = user._id + '$$$$'; // 以后可能会存储更多信息，用 $$$$ 来分隔
-  var opts = {
-    path: '/',
-    maxAge: 1000 * 60 * 60 * 24 * 30,
-    signed: true,
-    httpOnly: true
-  };
-  res.cookie(config.auth_cookie_name, auth_token, opts); //cookie 有效期30天
-}
-
-exports.gen_session = gen_session;
-
-//// 验证用户是否登录
-//exports.authUser = function (req, res, next) {
-//var ep = new eventproxy();
-//ep.fail(next);
-//
-//// Ensure current_user always has defined.
-//res.locals.current_user = null;
-//
-//if (config.debug && req.cookies['mock_user']) {
-//  var mockUser = JSON.parse(req.cookies['mock_user']);
-//  req.session.user = new UserModel(mockUser);
-//  if (mockUser.is_admin) {
-//    req.session.user.is_admin = true;
-//  }
-//  return next();
-//}
-//
-//ep.all('get_user', function (user) {
-//  if (!user) {
-//    return next();
-//  }
-//  user = res.locals.current_user = req.session.user = new UserModel(user);
-//
-//  if (config.admins.hasOwnProperty(user.loginname)) {
-//    user.is_admin = true;
-//  }
-//
-//  Message.getMessagesCount(user._id, ep.done(function (count) {
-//    user.messages_count = count;
-//    next();
-//  }));
-//});
-//
-//if (req.session.user) {
-//  ep.emit('get_user', req.session.user);
-//} else {
-//  var auth_token = req.signedCookies[config.auth_cookie_name];
-//  if (!auth_token) {
-//    return next();
-//  }
-//
-//  var auth = auth_token.split('$$$$');
-//  var user_id = auth[0];
-//  UserProxy.getUserById(user_id, ep.done('get_user'));
-//}
-//};
