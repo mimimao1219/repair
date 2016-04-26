@@ -1,7 +1,7 @@
 var mongoose   = require('mongoose');
 
 var UserModel = require('../models').User;
-var request = require('request');
+var request = require('request-json');
 var tools = require('../common/tools')
 //var Message    = require('../proxy').Message;
 var config     = require('../config');
@@ -9,67 +9,104 @@ var eventproxy = require('eventproxy');
 //var UserProxy  = require('../proxy').User;
 
 
-// 验证用户是否有权限
-exports.authUser = function (req, res, next) {
+// 验证用户第一步
+exports.authUserOne = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
-		  
-		  
-	    return res.status(403).send('forbidden!');
-	  }
+		 var openid = req.query.open_id;
+		 UserModel.findOne({OpenId:openid},function(user) {
+			 if (user) {
+				 req.session.user=user;
+			 }else{	
+				 return next(); 
+			 }	 
+		 });  
+	  }else{
+		  if (req.session.user.usertype==='1'){
+			  
+		  }
 
-     next();
+	  }   
+};
+//验证用户第二步
+exports.authUserTwo = function (req, res, next) {
+	  if (!req.session || !req.session.user) {
+		 var openid = req.query.open_id;
+		 UserModel.findOne({OpenId:openid},function(user) {
+			 if (user) {
+				 req.session.user=user;
+			 }else{	
+				 next(); 
+			 }	 
+		 });  
+	  }else{
+		  next(); 
+	  }   
 };
 
-exports.getIdentify =function (openid,config) {
-    var url = 'http://www.spdbcloud.com/WChart/Identify?open_id=' + openid + '&pid='+config.pftoken ;
-    request.get(url, function(error, response, body) {
+exports.getIdentify =function (openid,config,cb) {
+    var url = 'WChart/Identify?open_id=' + openid + '&pid='+config.weixingzh ;
+    var client = request.createClient('http://www.spdbcloud.com/');
+    client.get(url, function(error, response, body) {
         if (error) {
-            return res.status(403).send('forbidden!');
+          	cb('getIdentify error', error);
         }
         else {
             try {
-                var flag = JSON.parse(body).flag;
-                return flag;
+                var flag = body.flag;
+                console.log(body);
+                cb(null, flag);
             }
             catch (e) {
-              	return e;
+            	cb('getIdentify error', error);
             }
         }
     });
 }
 
-exports.getUserInfo =function (openid,config) {
-    var data='{OpenID:' + openid + ',Token:'+config.pftoken+',Pid:'+config.weixingzh+'}';
-    var queryStr=tools.myCipheriv(data,config);
-    var options = {
-    		headers: {"Connection": "close"},
-    	    url: 'http://www.spdbcloud.com/api/WChartUserInfo',
-    	    method: 'POST',
-    	    json:true,
-    	    body: {QueryStr:queryStr,UID :'0',ReqCode :"0"}
-    	};
-    	request(options, function(error, response, body) {
-    		if (!error && response.statusCode == 200) {
+exports.getUserInfo =function (openid,config,cb) {
+    var data1='{OpenID:' + openid + ',Token:'+config.pftoken+',Pid:'+config.weixingzh+'}';
+    var queryStr=tools.myCipheriv(data1,config);
+    var client = request.createClient('http://www.spdbcloud.com/');
+    var data = {
+    		UID: 1,
+    		QueryStr: queryStr,
+    		ReqCode: '0'
+    };
+    client.post('api/WChartUserInfo',data, function(error, response, body) {
+    	console.log(response.statusCode);
+    	if (!error && response.statusCode == 200) {
     			console.log(body);
-    			return tools.myDecipheriv(JSON.parse(body).ResultData); 			
+    			if (body.ResultData) {   			
+    			cb(null, tools.myDecipheriv(body.ResultData));
+    			}else{   				
+    				cb(null, response.statusCode);
+    			}
+    			//return tools.myDecipheriv(JSON.parse(body).ResultData); 			
     		}
     	});    
 }
 
-exports.getAssets =function (AssetsNo,config) {
+exports.getAssets =function (AssetsNo,config,cb) {
     var data='{AssetsNo:' + AssetsNo + ',Token:'+config.pftoken+'}';
+    console.log(data);
     var queryStr=tools.myCipheriv(data,config);
-    var options = {
-    		headers: {"Connection": "close"},
-    	    url: 'http://www.spdbcloud.com/api/WChartAssets',
-    	    method: 'POST',
-    	    json:true,
-    	    body: {QueryStr:queryStr,UID :'0',ReqCode :"0"}
-    	};
-    	request(options, function(error, response, body) {
-    		if (!error && response.statusCode == 200) {
-    			console.log(body);
-    			return tools.myDecipheriv(JSON.parse(body).ResultData);   			
+    //var queryStr='yffobFj2ybyM5ApDa6Fs+2HKsKQQxkptG4O11JOdVCI0dpvm+Jm+igc2dOj3NJxs'
+    	var client = request.createClient('http://www.spdbcloud.com/');
+    var data = {
+    		UID: 1,
+    		QueryStr: queryStr,
+    		ReqCode: '0'
+    };
+    client.post('api/WChartAssets',data, function(error, response, body) {
+    	console.log(response.statusCode);
+    	if (!error && response.statusCode == 200) {
+    			
+    			if (body.ResultData) {   			
+    			cb(null, tools.myDecipheriv(body.ResultData));
+    			}else{   				
+    				cb(null, response.statusCode);
+    			}
+    			//return tools.myDecipheriv(JSON.parse(body).ResultData); 			
     		}
     	});    
 }

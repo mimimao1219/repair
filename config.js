@@ -112,10 +112,17 @@ var config = {
  //浦发接口
  	pftoken:'FaultRepair',
  	weixingzh:'vSpdbCloud',
+ 	//key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
+ 	//iv:"6iQsiXGB@w>K$g\a",
  	key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
- 	iv:'6iQsiXGB@w>K$g\a',
+ 	iv:"6iQsiXGB@w>K$g*a",
 
+ 	//Key：SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov
+ 	//Vi：6iQsiXGB@w>K$g*a
 
+ 	//Token：FaultRepair
+
+ 	//正式的OpenID：oYVvgv9ECQTYKRfXaQqxNd2z2Xm8 （张晓辉）
 
 };
 
