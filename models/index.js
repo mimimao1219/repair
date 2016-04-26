@@ -13,6 +13,7 @@ mongoose.connect(config.db, {
 
 // models
 require('./company');
+require('./asset');
 require('./user');
 require('./repair_company');
 require('./repair_current');
@@ -22,6 +23,7 @@ require('./counters');
 require('./repair_image');
 require('./costcenter');
 
+exports.Asset         = mongoose.model('Asset');
 exports.User         = mongoose.model('User');
 exports.Costcenter         = mongoose.model('Costcenter');
 exports.Company         = mongoose.model('Company');

@@ -10,6 +10,8 @@ var RepairManagerModel = require('../models').RepairManager;
 var RepairTypeModel = require('../models').RepairType;
 var CompanyModel = require('../models').Company;
 var UserModel = require('../models').User;
+var AssetModel = require('../models').Asset;
+var auth = require('./middlewares/auth');
 var EventProxy   = require('eventproxy');
 var tools        = require('../common/tools');
 var store        = require('../common/store');
@@ -188,8 +190,43 @@ exports.create = function (req, res, next) {
   //repaircurrent.
   if (req.query.code) {
   	//扫码查询资产需要根据接口获得成本中心数据
-  	repaircurrent.costcenter=req.query.code
-	ep.emit('repaircurrent',repaircurrent); 
+  	var code=req.query.code
+  	AssetModel.findOne({AssetsNo:code) }, null, function (err, asset) {
+  		if (asset) {
+  			var cost = asset.UserCostCenter.split('-*');
+  			var classa = asset.AssetsClass.split('-');
+  			repaircurrent.repairType=classa[0];
+  		    repaircurrent.repairtypename=classa[1];
+  			repaircurrent.costcenter=cost[0];
+  			repaircurrent.costcentername=cost[1];
+  			repaircurrent.repairContent = asset.AssetsName;
+  			ep.emit('repaircurrent',repaircurrent); 
+  		}else{
+  			auth.getAssets(code,config ,function (e,asset) {	
+  		  		if (query){
+  		  		var cost = asset.UserCostCenter.split('-*');
+  	  			var classa = asset.AssetsClass.split('-');
+  	  			repaircurrent.repairType=classa[0];
+  	  		    repaircurrent.repairtypename=classa[1];
+  	  			repaircurrent.costcenter=cost[0];
+  	  			repaircurrent.costcentername=cost[1];
+  	  			repaircurrent.repairContent = asset.AssetsName;
+  	  		    myAsset = new AssetModel();
+  	  		    myAsset.AssetsNo=asset.AssetsNo;
+  	  		    myAsset.AssetsName=asset.AssetsName;
+  	  	        myAsset.AssetsClass=asset.AssetsClass;
+  	  	        myAsset.AssetsModel=asset.AssetsModel;
+  	            myAsset.UserCostCenter=asset.UserCostCenter;
+  	            myAsset.save();
+  		  		   ep.emit('repaircurrent',repaircurrent); 
+  		  		}else{
+  		  			ep.emit('repaircurrent',repaircurrent); 
+  		  		}
+  		  	});
+  		}
+  	});
+  	
+	
   	
   }else{
   	

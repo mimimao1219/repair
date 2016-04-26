@@ -16,3 +16,8 @@ var auth = require('../middlewares/auth');
 //counters.save();
 //counters = new CountersModel({name : 'repair_type',seq:23});
 //counters.save();
+
+var aa = "7604020100-*郑州分行健康路支行运营中心"
+	
+	var bb = aa.split("-*")
+	console.log(bb[1]);
