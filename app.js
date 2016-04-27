@@ -16,7 +16,7 @@ var schedule = require("node-schedule");
 require('./middlewares/mongoose_log'); // 打印 mongodb 查询日志
 require('./models');
 var webRouter = require('./web_router');
-var auth = require('./middlewares/auth');
+//var auth = require('./middlewares/auth');
 var errorPageMiddleware = require('./middlewares/error_page');
 var proxyMiddleware = require('./middlewares/proxy');
 //var RedisStore = require('connect-redis')(session);
@@ -86,14 +86,16 @@ app.use(compress());
 app.use(session({
 	  secret: config.session_secret,
 	  cookie:{
-		  maxAge: 1000*60*30;
-		  }
+		  maxAge: 1000*60*30,
+		  },
 	  resave: true,
 	  saveUninitialized: true,
 	}));
 
 //用户授权
-app.use(auth.authUser);
+//app.use(auth.authUserOne);
+//app.use(auth.authUserTwo);
+//app.use(auth.authUserThree);
 
 
 // set static, dynamic helpers

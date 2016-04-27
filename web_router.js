@@ -3,18 +3,19 @@ var express = require('express');
 var repair = require('./controllers/repair');
 var setup = require('./controllers/setup');
 //var search = require('./controllers/search');
+var auth = require('./middlewares/auth');
 var config = require('./config');
 var signature = require('./common/signature');
 var router = express.Router();
 var createSignature = signature.getSignature(config.weixin);
 //模拟用户
-router.get('/',repair.userlist);
+router.get('/',auth.authUserOne,auth.authUserTwo,auth.authUserThree,repair.list);
 
 router.get('/sign',repair.sign);
 
 router.get('/login',repair.login);
 //维修管理列表
-router.get('/list',repair.list);
+router.get('/list',auth.authUserOne,auth.authUserTwo,auth.authUserThree,repair.list);
 //申请维修管理
 router.get('/repair/create',  repair.create);
 router.get('/:tid/edit',  repair.showEdit);  // 编辑记录题

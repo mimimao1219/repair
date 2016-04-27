@@ -11,7 +11,7 @@ var RepairTypeModel = require('../models').RepairType;
 var CompanyModel = require('../models').Company;
 var UserModel = require('../models').User;
 var AssetModel = require('../models').Asset;
-var auth = require('./middlewares/auth');
+var auth = require('../middlewares/auth');
 var EventProxy   = require('eventproxy');
 var tools        = require('../common/tools');
 var store        = require('../common/store');
@@ -50,7 +50,7 @@ exports.login = function (req, res, next) {
 			myUser.usertype=usertype;
 			req.session.user=myUser;
 			myUser.save();
-			res.redirect('/);
+			res.redirect('/');
      		}else{
      			res.redirect('/sign?openid='+openid);
      		}
@@ -73,7 +73,7 @@ exports.login = function (req, res, next) {
 			myUser.usertype=usertype;
 			req.session.user=myUser;
 			myUser.save();
-			res.redirect('/);
+			res.redirect('/');
      		}else{
      			res.redirect('/sign?openid='+openid);
      		}
@@ -87,8 +87,10 @@ exports.userlist = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {		
-  var usertype='';
-  usertype= req.query.usertype;
+  var usertype=req.session.user.usertype;
+  //usertype= req.query.usertype;
+  console.log(req.session.user)
+  console.log(req.session.user.usertype)
   res.locals.usertype =usertype;
   var events = ['repairCurrents','repairCurrentsing','repairfinishs'];
   var ep = EventProxy.create(events, function (repairCurrents,repairCurrentsing,repairfinishs) {
@@ -140,11 +142,11 @@ exports.list = function (req, res, next) {
   var query = {};
 
   if (usertype === '1') {
-      query = { signid: '11053416' };
+      query = { signid: req.session.user.UserId };
       ep1.emit('query',query);
     }
   if (usertype === '2') {	
-      RepairManagerModel.find({managerid: 11003720}, 'repairtype',{sort: '-create_at'}, function (err, repairmanagers) {
+      RepairManagerModel.find({managerid: req.session.user.UserId}, 'repairtype',{sort: '-create_at'}, function (err, repairmanagers) {
       if (err) {
         return callback(err);
       }
@@ -154,11 +156,11 @@ exports.list = function (req, res, next) {
     }
 
    if (usertype === '3') {
-      query = { companyid: 8 ,};
+      query = { tel: req.session.user.CellPhone ,};
       ep1.emit('query',query);
     } 
    if (usertype === '4') {
-      query = { comtact_mob: 15003990925,msk1:1 };
+      query = { comtact_mob:req.session.user.CellPhone,msk1:1 };
       ep1.emit('query',query);
     } 
 
@@ -182,16 +184,21 @@ exports.create = function (req, res, next) {
   
   var repaircurrent = new RepairCurrentModel();
   //需要根据接口获得用户数据
-  repaircurrent.signid= '11053416' ;
-  repaircurrent.repairname= '谢居正';
-  repaircurrent.repairtel= '65752525';
-  repaircurrent.repairmail= 'xiejz1@spdb.com.cn';
-  repaircurrent.repairType=20;
+  //repaircurrent.signid= '11053416' ;
+  //repaircurrent.repairname= '谢居正';
+  //repaircurrent.repairtel= '65752525';
+  //repaircurrent.repairmail= 'xiejz1@spdb.com.cn';
+  //repaircurrent.repairType=20;
+  repaircurrent.signid= req.session.user.UserId ;
+  repaircurrent.repairname= req.session.user.UserName ;
+  repaircurrent.repairtel= req.session.user.CellPhone ;
+  repaircurrent.repairmail= req.session.user.Email ;
+  
   //repaircurrent.
   if (req.query.code) {
   	//扫码查询资产需要根据接口获得成本中心数据
   	var code=req.query.code
-  	AssetModel.findOne({AssetsNo:code) }, null, function (err, asset) {
+  	AssetModel.findOne({AssetsNo:code}, null, function (err, asset) {
   		if (asset) {
   			var cost = asset.UserCostCenter.split('-*');
   			var classa = asset.AssetsClass.split('-');
@@ -202,8 +209,9 @@ exports.create = function (req, res, next) {
   			repaircurrent.repairContent = asset.AssetsName;
   			ep.emit('repaircurrent',repaircurrent); 
   		}else{
-  			auth.getAssets(code,config ,function (e,asset) {	
-  		  		if (query){
+  			auth.getAssets(code,config ,function (e,asset1) {	
+  		  		if (asset1){
+  		  		var asset = JSON.parse(asset);
   		  		var cost = asset.UserCostCenter.split('-*');
   	  			var classa = asset.AssetsClass.split('-');
   	  			repaircurrent.repairType=classa[0];
@@ -225,13 +233,9 @@ exports.create = function (req, res, next) {
   		  	});
   		}
   	});
-  	
-	
-  	
-  }else{
-  	
-  	 ep.emit('repaircurrent',repaircurrent); 
-  	 
+ 
+  }else{	
+  	 ep.emit('repaircurrent',repaircurrent); 	 
   }
  
 };

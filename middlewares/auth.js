@@ -16,6 +16,7 @@ var eventproxy = require('eventproxy');
 exports.authUserOne = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
 		 var openid = req.query.open_id;
+	
 		 UserModel.findOne({OpenId:openid},function(e,user) {
 			 if (user) {
 				 req.session.user=user;
@@ -32,9 +33,11 @@ exports.authUserOne = function (req, res, next) {
 exports.authUserTwo = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
 		 var openid = req.query.open_id;
-		 getUserInfo(openid,config,function(e,user) {
+		 getUserInfo(openid,config,function(e,user1) {
+			 console.log(user1);
 			 
-			 if (user) {
+			 if (user1) {
+				var user = JSON.parse(user1);
 				var myUser = new UserModel();
 				myUser.OpenId= user.OpenId;
 				myUser.NickName= user.NickName;
@@ -46,7 +49,7 @@ exports.authUserTwo = function (req, res, next) {
 				myUser.FixedPhone= user.FixedPhone;
 				myUser.CellPhone= user.CellPhone;
 				myUser.Email= user.Email;
-				 RepairManagerModel.findOne({OpenId:openid},function(e,manager) {
+				 RepairManagerModel.findOne({managerid:user.UserId},function(e,manager) {
 					 if (manager){
 						 myUser.usertype='2'; 
 						 req.session.user=myUser;
@@ -77,7 +80,7 @@ exports.authUserThree = function (req, res, next) {
 	  }   
 };
 
-exports.getIdentify =function (openid,config,cb) {
+function getIdentify(openid,config,cb) {
     var url = 'WChart/Identify?open_id=' + openid + '&pid='+config.weixingzh ;
     var client = request.createClient('http://www.spdbcloud.com/');
     client.get(url, function(error, response, body) {
@@ -97,9 +100,14 @@ exports.getIdentify =function (openid,config,cb) {
     });
 }
 
-exports.getUserInfo =function (openid,config,cb) {
-    var data1='{OpenID:' + openid + ',Token:'+config.pftoken+',Pid:'+config.weixingzh+'}';
+function getUserInfo(openid,config,cb) {
+    var data1='{"OpenID":"' + openid + '","Token":"'+config.pftoken+'","Pid":"'+config.weixingzh+'"}';
+   
+    console.log(data1);
+    
     var queryStr=tools.myCipheriv(data1,config);
+    console.log(queryStr);
+    //queryStr="ecnR27LEOCTtL2Iu1fGJR5waUgfOcyrFYK4ii6DWBi/nzHgrwsnAUtHEmgFwwC0Q1xMYzYw3N/pNa8K3pYPBlAlvsyYRwneSSJRBLZB0lCbzYXFpTkN/r1BFpxK+At1bNLg2xDF3N9LCQizhJ2gJTQ==";
     var client = request.createClient('http://www.spdbcloud.com/');
     var data = {
     		UID: 1,
@@ -111,17 +119,20 @@ exports.getUserInfo =function (openid,config,cb) {
     	if (!error && response.statusCode == 200) {
     			console.log(body);
     			if (body.ResultData) {   			
-    			cb(null, tools.myDecipheriv(body.ResultData));
+    			cb(null, tools.myDecipheriv(body.ResultData,config));
     			}else{   				
-    				cb(null, response.statusCode);
+    				cb(null, null);
     			}
     			//return tools.myDecipheriv(JSON.parse(body).ResultData); 			
+    		}else{
+    			cb(null, null);
     		}
+     	
     	});    
 }
 
-exports.getAssets =function (AssetsNo,config,cb) {
-    var data='{AssetsNo:' + AssetsNo + ',Token:'+config.pftoken+'}';
+function getAssets(AssetsNo,config,cb) {
+    var data='{AssetsNo:"' + AssetsNo + '",Token:"'+config.pftoken+'"}';
     console.log(data);
     var queryStr=tools.myCipheriv(data,config);
     //var queryStr='yffobFj2ybyM5ApDa6Fs+2HKsKQQxkptG4O11JOdVCI0dpvm+Jm+igc2dOj3NJxs'
@@ -136,13 +147,17 @@ exports.getAssets =function (AssetsNo,config,cb) {
     	if (!error && response.statusCode == 200) {
     			
     			if (body.ResultData) {   			
-    			cb(null, tools.myDecipheriv(body.ResultData));
+    			cb(null, tools.myDecipheriv(body.ResultData,config));
     			}else{   				
-    				cb(null, response.statusCode);
+    				cb(null, null);
     			}
     			//return tools.myDecipheriv(JSON.parse(body).ResultData); 			
-    		}
+    	}else{
+			cb(null, null);
+		}
     	});    
 }
-
+exports.getAssets = getAssets;
+exports.getUserInfo = getUserInfo;
+exports.getIdentify = getIdentify;
 

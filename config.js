@@ -111,7 +111,7 @@ var config = {
  	},
  //浦发接口
  	pftoken:'FaultRepair',
- 	weixingzh:'vSpdbCloud',
+ 	weixingzh:'spdbcloud',
  	//key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
  	//iv:"6iQsiXGB@w>K$g\a",
  	key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
