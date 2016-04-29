@@ -3,6 +3,7 @@ bback
 
 ./mongorestore -h 127.0.0.1:27017 -d repair_dev –directoryperdb /Users/lee/git/fyrepair/repair_dev/
 
+http://repair.ittun.com
 
 ## 安装部署
 
