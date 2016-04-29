@@ -53,19 +53,19 @@
 			<li  id='costcentercf' class="mui-table-view-cell mui-input-row" style="margin-left: -15px;">
 				<a class="mui-navigate-right" id="centershow">
 					<label>成本中心:</label>
-					<input id='costcentername' name='costcentername' readOnly="true" style="border: none;" type="text" class="mui-input-clear"  value= '' >
+					<input id='costcentername' name='costcentername' readOnly="true" style="border: none;" type="text" class="mui-input-clear"  value= '<%= typeof(repaircurrent.costcentername) !== 'undefined' && repaircurrent.costcentername || '' %>' >
 				</a>
 			</li>
 			<li id='repairTypenamecf' class="mui-table-view-cell mui-input-row" style="margin-left: -15px;">
 				<a class="mui-navigate-right" id="sortshow">
 					<label>报修类别:</label>				
-					<input id='repairtypename' name='repairtypename' readOnly="true" style="border: none;"  type="text" class="mui-input-clear"  value= '' >
+					<input id='repairtypename' name='repairtypename' readOnly="true" style="border: none;"  type="text" class="mui-input-clear"  value= '<%= typeof(repaircurrent.repairtypename) !== 'undefined' && repaircurrent.repairtypename || '' %>' >
 				</a>
 			</li>
 			
 			<div class="mui-input-row">
 				<label>报修人员:</label>
-				<input id='repairname' name='repairname' type="text" class="mui-input-clear" placeholder="报修人员姓名" value= <%= repaircurrent.repairname  %> >
+				<input required id='repairname' name='repairname' type="text" class="mui-input-clear" placeholder="报修人员姓名" value= <%= repaircurrent.repairname  %> >
 			</div>	
 			<div class="mui-input-row">
 				<label>报修电话:</label>
@@ -77,7 +77,7 @@
 			</div>
 			<div class="mui-input-row">
 				<label>故障描述:</label>
-				<textarea id='repairContent' name='repairContent' id="textarea" rows="3" placeholder="详细描述故障"></textarea>
+				<textarea required id='repairContent' name='repairContent' id="textarea" rows="3" placeholder="详细描述故障"><%= repaircurrent.repairContent  %></textarea>
 			</div>
 			<div class="mui-input-row">
 				<label>图片上传:</label>	
@@ -139,8 +139,10 @@
 				      needResult: 1,
 				      desc: 'scanQRCode desc',
 				      success: function (res) {
-//				        alert(JSON.stringify(res));
-				        window.location.href='/repair/create?code=12345678'; 
+				        //alert(JSON.stringify(res));
+				        var result = res.resultStr.split(',');
+				        var code = result[1];
+				        window.location.href='/repair/create?code='+code; 
 				      }
 				    });
 				  });

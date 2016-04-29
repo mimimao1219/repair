@@ -37,43 +37,47 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			
 			<h1 class="mui-title">绑定手机登陆</h1>
 		</header>
 		<div class="mui-content">
-			<form class="mui-input-group">
+			<form class="mui-input-group" action='/login' method='post'  >
 			<input type='hidden' name='_csrf' value='<%= csrf %>'>
-		    <input type='hidden' id='openid' name='openid' value=''>
+		    <input type='hidden' id='openid' name='openid' value='<%=openid %>'>
 		    	<input type='hidden' id='tid' name='tid' value=''>
 				<div class="mui-radio" style="  border-bottom: 1px solid #E1E2E3;  height: 60px;     padding: 15px 15px; margin-bottom: 10px;">
 						<div style=" float: left; ">
-							<input name="usertype" type="radio" style="left: 0px; position: static;" >
+							<input checked name="usertype" type="radio" value='3' style="left: 0px; position: static;" >
 						   <label style="width: 150px; display: inline; padding-right: 0px;">维修公司</label>
 						</div>
 						<div  style="float: right;">
-							<input name="usertype" type="radio" style="left: 0px; position: static;" >
+							<input name="usertype" type="radio" value='4' style="left: 0px; position: static;" >
 						   <label style="width: 150px; display: inline; padding-right: 0px;">维修人员</label>
 						</div>
 						
 				</div>
 				<div class="mui-input-row">
 					<label>手机号：</label>
-					<input id='mob' name='mob' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+					<input required id='mob' name='mob' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
 				</div>
-				<div class="mui-input-row">
+			<!--	<div class="mui-input-row">
 					<label>验证码：</label>
 					<input id='yzm' name='yzm' type="text" class="mui-input-clear mui-input" placeholder="请输入验证码">
-				</div>
+				</div> -->
 				
-				
+				<div class="mui-content-padded">
+				   <button  type="submit" class="mui-btn mui-btn-block mui-btn-primary">提交</button>
+			    </div>
 			</form>
-			<div class="mui-content-padded">
-				<button id='reg' class="mui-btn mui-btn-block mui-btn-primary">提交</button>
-			</div>
+			<% if (err==1) { %>
+				<div class="mui-content-padded oauth-area">
+                    <span>请填写正确的手机号！如无法登入请联系您的上一级。</span>
+			    </div>
+			<% } %>
 			
 		</div>
-		<script src="../public/javascripts/mui.min.js"></script>
-		
+
+
 		<script>
 			
 		</script>

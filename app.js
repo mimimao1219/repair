@@ -1,5 +1,4 @@
 
-
 var config = require('./config');
 
 if (!config.debug && config.oneapm_key) {
@@ -32,6 +31,7 @@ var renderMiddleware = require('./middlewares/render');
 var logger = require('./common/logger');
 var helmet = require('helmet');
 var bytes = require('bytes')
+var RepairCurrentModel = require('../models').RepairCurrent;
 
 
 // 静态文件目录
@@ -140,18 +140,53 @@ if (!module.parent) {
     logger.info('God bless love....');
     logger.info('You can debug your app with http://' + config.hostname + ':' + config.port);
     logger.info('');
-//  定时任务
-//	var rule = new schedule.RecurrenceRule();
-//　　rule.dayOfWeek = [0, new schedule.Range(1, 6)];
-//　　rule.hour = 20;
-//　　rule.minute = 0;
-//  rule.second =[10,20,30];
-//　　var j = schedule.scheduleJob(rule, function(){
-//　　　　console.log("执行任务");
-//　　});
+
 
 
   });
 }
+//定时任务 每天8点到17点，每间隔15分钟扫描一次
+var WechatAPI = require('wechat-api');
+var rule = new schedule.RecurrenceRule();
+rule.dayOfWeek = [0, new schedule.Range(1, 6)];
+rule.hour = [new schedule.Range(8, 17)];
+rule.minute = [0, 30];  
+var j = schedule.scheduleJob(rule, function(){
+	RepairCurrentModel.find({}).exec(function (err, RepairCurrents) {
+		RepairCurrents.forEach(function (RepairCurrent) {
+			
+			console.log("执行任务");
+		});
+	});
+});
 
+
+
+var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
+var templateId= 'HKRySQQFlR9e-bl7pCvZxheEmk956TdQIh5WbHVbxlA';
+//URL置空，则在发送后,点击模板消息会进入一个空白页面（ios）, 或无法点击（android）
+var url= 'http://weixin.qq.com/download';
+var data = {
+"first": {
+  "value":"您好，您有新的待办任务！",
+  "color":"#174177"
+},
+"keyword1":{
+  "value":"请到成本中心维修电脑",
+  "color":"#173177"
+},
+"keyword2": {
+  "value":"待办",
+  "color":"#172177"
+},
+
+"remark":{
+  "value":"要求完成时间:2016-05-02\n请抽空处理\n谢谢。",
+  "color":"#171177"
+}
+};
+api.sendTemplate('oJme-s5bmL9j-Ie2aO3TL9y2zowA', config.weixin.templateId, url, data, function (err, result) {
+	console.log(result);
+});
+//oJme-szsGYjRcIMIFxvvt5XAI8qo
 module.exports = app;

@@ -24,7 +24,7 @@ var fs = require('fs');
 //维修人员列表 的
 exports.comtactlist = function (req, res, next) {	
  var userid= req.query.userid;
- userid='58';
+ //userid='58';
  res.locals.userid =userid;
  var events = ['repaircompanys','repairtypes'];
   var ep = EventProxy.create(events, function (repaircompanys,repairtypes) {
@@ -88,7 +88,7 @@ exports.comtactdel = function (req, res, next) {
 //维修类型列表
 exports.typelist = function (req, res, next) {	
  var userid= req.query.userid;
- userid='11003720';
+ //userid='11003720';
  res.locals.userid =userid;
  var events = ['myrepairtypes','repairtypes'];
   var ep = EventProxy.create(events, function (myrepairtypes,repairtypes) {
@@ -109,6 +109,7 @@ exports.typesave = function (req, res, next) {
     var RepairType = new RepairTypeModel();
     RepairType.repairtype   = CountersModel.findAndModify({update:{$inc:{'seq':1}}, query:{"name":"repair_type"}, new:true}).seq;
     RepairType.repairname   = validator.trim(req.body.repairname);
+    RepairType.statu   = validator.trim(req.body.statu);
     RepairType.save(function (err, RepairType) {
      	var RepairManager = new RepairManagerModel();
      	    RepairManager.managerid = validator.trim(req.body.managerid);
@@ -121,6 +122,7 @@ exports.typesave = function (req, res, next) {
   }else{
 	  RepairTypeModel.findOne({_id:validator.trim(req.body.tid) }, null, function (err, RepairType) {  
 		RepairType.repairname   = validator.trim(req.body.repairname);
+		RepairType.statu   = validator.trim(req.body.statu);
 		RepairType.save(function (err, RepairType) {
 			RepairManagerModel.findOne({managerid:validator.trim(req.body.managerid) ,repairtype:RepairType.repairtype}, null, function (err, RepairManager) {  
 			RepairManager.repairname=RepairType.repairname ;
@@ -137,7 +139,7 @@ exports.typesave = function (req, res, next) {
 //维修公司列表
 exports.companylist = function (req, res, next) {	
  var userid= req.query.userid;
- userid='11003720';
+ //userid='11003720';
  res.locals.userid =userid;
  var events = ['companys','repairtypes'];
   var ep = EventProxy.create(events, function (companys,repairtypes) {

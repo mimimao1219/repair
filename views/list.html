@@ -29,11 +29,9 @@
 			<li class="mui-table-view-cell mui-media" >
 				<% if (usertype === '1') { %>
 					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
-							姓名：谢居正
+							<img src="<%=UserPhotoUrl%>" width="50" height="50" />
 					</div>
-					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
-							所在单位：支行-红专路
-					</div>	
+			
 					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
 					<% } %>
 					<% if (usertype === '2') { %>
@@ -43,11 +41,9 @@
 						</a>
 				    </div>
 					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
-							姓名：赵亮亮
+							<img src="<%=UserPhotoUrl%>" width="50" height="50" />
 					</div>
-					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
-							所在单位：信息中心
-					</div>	
+
 					
 					<!--<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">申请报修</a>
 					<a href="/repair/create" class="mui-btn mui-btn-primary" id="apply">维修公司管理</a>
@@ -55,12 +51,12 @@
 					<% } %>
 					<% if (usertype === '3') { %>
 					<div class="mui-media-body" style="margin-top: 0px;font-size: 14px;">
-							河南省银利科技有限公司
+							<%=UserName%>
 					</div>
 					<div class="mui-media-body" style="margin-top: 0px; margin-bottom: 5px;font-size: 14px;">
 							
 					</div>	
-	                <a href="/setup/comtactlist" class="mui-btn mui-btn-primary" id="comtactlist">维修人员管理</a>
+	                <a href="/setup/comtactlist?userid=<%=userid%>" class="mui-btn mui-btn-primary" id="comtactlist">维修人员管理</a>
 					<% } %>
 			</li>
 		</ul>
@@ -69,9 +65,9 @@
 							<div class="mui-scroll-wrapper">
 								<div class="mui-scroll">
 									<ul class="mui-table-view">
-										<li class="mui-table-view-cell" style="padding-right: 15px;"><a href="/setup/typelist"  onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">维修类型管理</a>
+										<li class="mui-table-view-cell" style="padding-right: 15px;"><a href="/setup/typelist?userid=<%=userid%>"  onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">维修类型管理</a>
 										</li>
-										<li class="mui-table-view-cell"><a href="/setup/companylist" onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">维修公司管理</a>
+										<li class="mui-table-view-cell"><a href="/setup/companylist?userid=<%=userid%>" onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">维修公司管理</a>
 										</li>
 										<li class="mui-table-view-cell"><a href="/repair/create" onmousemove="this.style.color='#007aff';" onmouseout="this.style.color='#919191'">申请报修</a>
 										</li>

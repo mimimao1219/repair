@@ -13,12 +13,12 @@ router.get('/',auth.authUserOne,auth.authUserTwo,auth.authUserThree,repair.list)
 
 router.get('/sign',repair.sign);
 
-router.get('/login',repair.login);
+router.post('/login',repair.login);
 //维修管理列表
 router.get('/list',auth.authUserOne,auth.authUserTwo,auth.authUserThree,repair.list);
 //申请维修管理
 router.get('/repair/create',  repair.create);
-router.get('/:tid/edit',  repair.showEdit);  // 编辑记录题
+router.get('/:tid/edit',auth.authUserOne,auth.authUserTwo,auth.authUserThree,  repair.showEdit);  // 编辑记录题
 router.post('/repair/create',   repair.put);// 保存新建的记录
 router.post('/repair/update',   repair.update);//更新维修记录
 

@@ -2,6 +2,7 @@
 
 var validator = require('validator');
 //var at           = require('../common/at');
+var WechatAPI = require('wechat-api');
 var RepairCurrentModel = require('../models').RepairCurrent;
 var RepairImageModel = require('../models').RepairImage;
 var CostcenterModel = require('../models').Costcenter;
@@ -26,15 +27,19 @@ var fs = require('fs');
 exports.sign = function (req, res, next) {
 	req.session.yzm='4561';
 	var openid= req.query.openid;
-	res.render('sign',{openid:openid});	
+	var err=0;
+	err = req.query.err;
+	res.render('sign',{openid:openid,err:err});	
 }
 exports.login = function (req, res, next) {
 	var openid = validator.trim(req.body.openid);
 	var mob = validator.trim(req.body.mob);
-	var yzm = validator.trim(req.body.yzm);
+	//var yzm = validator.trim(req.body.yzm);
 	var usertype = validator.trim(req.body.usertype);
+	console.log(usertype);
     if (usertype=='3'){
      	CompanyModel.findOne({tel:mob }, null, function (err, Company) {
+     		console.log(Company);
      		if (Company) {
      		var myUser = new UserModel();
 			myUser.OpenId= openid;
@@ -52,7 +57,7 @@ exports.login = function (req, res, next) {
 			myUser.save();
 			res.redirect('/');
      		}else{
-     			res.redirect('/sign?openid='+openid);
+     			res.redirect('/sign?openid='+openid+'&err=1');
      		}
      	});
     }
@@ -75,7 +80,7 @@ exports.login = function (req, res, next) {
 			myUser.save();
 			res.redirect('/');
      		}else{
-     			res.redirect('/sign?openid='+openid);
+     			res.redirect('/sign?openid='+openid+'&err=1');
      		}
      	});
     }
@@ -88,9 +93,9 @@ exports.userlist = function (req, res, next) {
 
 exports.list = function (req, res, next) {		
   var usertype=req.session.user.usertype;
-  //usertype= req.query.usertype;
-  console.log(req.session.user)
-  console.log(req.session.user.usertype)
+  res.locals.userid =req.session.user.UserId;
+  res.locals.UserPhotoUrl =req.session.user.UserPhotoUrl;
+  res.locals.UserName =req.session.user.UserName;
   res.locals.usertype =usertype;
   var events = ['repairCurrents','repairCurrentsing','repairfinishs'];
   var ep = EventProxy.create(events, function (repairCurrents,repairCurrentsing,repairfinishs) {
@@ -156,7 +161,7 @@ exports.list = function (req, res, next) {
     }
 
    if (usertype === '3') {
-      query = { tel: req.session.user.CellPhone ,};
+      query = { companyid: req.session.user.UserId ,};
       ep1.emit('query',query);
     } 
    if (usertype === '4') {
@@ -198,6 +203,7 @@ exports.create = function (req, res, next) {
   if (req.query.code) {
   	//扫码查询资产需要根据接口获得成本中心数据
   	var code=req.query.code
+  	//code = '005800000000032447';
   	AssetModel.findOne({AssetsNo:code}, null, function (err, asset) {
   		if (asset) {
   			var cost = asset.UserCostCenter.split('-*');
@@ -210,8 +216,9 @@ exports.create = function (req, res, next) {
   			ep.emit('repaircurrent',repaircurrent); 
   		}else{
   			auth.getAssets(code,config ,function (e,asset1) {	
+  				console.log(asset1);
   		  		if (asset1){
-  		  		var asset = JSON.parse(asset);
+  		  		var asset = JSON.parse(asset1);
   		  		var cost = asset.UserCostCenter.split('-*');
   	  			var classa = asset.AssetsClass.split('-');
   	  			repaircurrent.repairType=classa[0];
@@ -270,14 +277,6 @@ exports.put = function (req, res, next) {
   } else if (repaircurrent.repairContent === '') {
     editError = '保修内容不可为空';
   }
-  // END 验证
-
-//if (editError) {
-//  res.status(422);
-//  return res.render('repair/edit', {
-//    edit_error: editError,
-//  });
-//}
 
 
   repaircurrent.signdate=moment().format('YYYY-MM-DD');
@@ -286,8 +285,9 @@ exports.put = function (req, res, next) {
   repaircurrent.confirm_at=moment().add(1,'h').format('YYYY-MM-DD hh:mm');
   
   var ep = new EventProxy();
-      ep.all(['repaircurrent','repairtype'], function (repaircurrent,repairtype) {
-      	 repaircurrent.LstWarn_at=moment(repaircurrent.confirm_at).add(repairtype.statu,'d').format('YYYY-MM-DD hh:mm');
+      ep.all(['repaircurrent','repairtype','manager'], function (repaircurrent,repairtype,manager) {
+    	     repaircurrent.managerid=manager.managerid;
+    	     repaircurrent.LstWarn_at=moment(repaircurrent.confirm_at).add(repairtype.statu,'d').format('YYYY-MM-DD hh:mm');
       	 repaircurrent.save(function (err, repaircurrent) {
 			if (err) {
 		      return next(err);
@@ -322,13 +322,74 @@ exports.put = function (req, res, next) {
     	
     //发送at消息
 //  at.sendMessageToMentionUsers(content, topic._id, req.session.user._id);
-    
+	//通知维修管理员
+   if (repaircurrent.companyid){
+	   UserModel.findOne({UserId:repaircurrent.managerid},function(e,user) {
+	   var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
+	   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=2';
+	   var data = {
+	   "first": {
+	     "value":"您好，您有新的待办任务！",
+	     "color":"#174177"
+	   },
+	   "keyword1":{
+	     "value":repaircurrent.repairContent,
+	     "color":"#173177"
+	   },
+	   "keyword2": {
+	     "value":"尚未分配维修公司",
+	     "color":"#172177"
+	   },
+	   "remark":{
+	     "value":"要求完成时间:"+repaircurrent.LstWarn_at+"\n请抽空处理谢谢。",
+	     "color":"#171177"
+	   }
+	   };
+	   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
+	   	console.log(result);
+	   });
+	   });
+	} 
+   //通知维修公司
+   if (repaircurrent.comtact_mob){
+	   UserModel.findOne({UserId:repaircurrent.companyid},function(e,user) {
+		   
+		   var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
+		   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=2';
+		   var data = {
+		   "first": {
+		     "value":"您好，您有新的待办任务！",
+		     "color":"#174177"
+		   },
+		   "keyword1":{
+		     "value":repaircurrent.repairContent,
+		     "color":"#173177"
+		   },
+		   "keyword2": {
+		     "value":"尚未分配维修人员",
+		     "color":"#172177"
+		   },
+		   "remark":{
+		     "value":"要求完成时间:"+repaircurrent.LstWarn_at+"\n请抽空处理谢谢。",
+		     "color":"#171177"
+		   }
+		   };
+		   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
+		   	console.log(result);
+		   });
+		   });
+	}  
+  
 	});      	
    });
    
 // 设置默认完成天数
    RepairTypeModel.findOne({repairtype: repaircurrent.repairType}, 'statu', function (err, repairtype) {
    	 ep.emit('repairtype',repairtype);
+   });
+// 设置管理员
+   RepairManagerModel.findOne({repairtype: repaircurrent.repairType}, 'managerid', function (err, manager) {
+   	 ep.emit('manager',manager);
    });
    //根据保修类别查找保修公司。根据保修公司查找维修人员。
   		CompanyModel.findOne({repairtype: repaircurrent.repairType},  function (err, company) {

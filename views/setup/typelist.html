@@ -55,10 +55,15 @@ icon-checkmarkempty " style="color: #FFFFFF;">保存</button>
 			<div style="border-bottom: 1px solid #0062CC; padding-bottom: 20px;background-color: #FFFFFF;">
 			<ul class="mui-table-view2">
 				<li class="mui-input-row  mui-input-rows" >
-					<label  style="padding-right: 0px;width: 37%;">维修类型：</label>
-					<input id='repairname' name='repairname' value= '' type="text" 
-class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;width: 60%; padding-left: 15px; ">
-				 </li>									
+					<label  style="padding-right: 0px;width: 40%;">维修类型：</label>
+					<input required id='repairname' name='repairname' value= '' type="text" 
+class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;width: 57%; padding-left: 15px; ">
+				 </li>	
+				 <li class="mui-input-row  mui-input-rows" >
+					<label  style="padding-right: 0px;width: 40%;">默认完成时间：</label>
+					<input required id='statu' name='statu' value= '1' type="text" 
+class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;width: 57%; padding-left: 15px; ">
+				 </li>	
 			</ul> 
 		</div>
 		
@@ -116,6 +121,7 @@ class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;
 		
 		   mui('#scroll1').on('tap', 'a', function() {
 			document.getElementById('repairname').value = this.dataset.repairname;
+			document.getElementById('statu').value = this.dataset.statu;
 			document.getElementById('repairtype').value = this.dataset.repairtype;	
 		   });		
 				

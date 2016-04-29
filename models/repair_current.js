@@ -46,6 +46,7 @@ var RepairCurrentSchema = new Schema({
   comtact_mob:Number,
   comtact_mail:String,
   comtact_type:Number,
+  managerid:String,
   
   
 });
