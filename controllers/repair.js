@@ -4,6 +4,7 @@ var validator = require('validator');
 //var at           = require('../common/at');
 var WechatAPI = require('wechat-api');
 var RepairCurrentModel = require('../models').RepairCurrent;
+var RepairHistoryModel = require('../models').RepairHistory;
 var RepairImageModel = require('../models').RepairImage;
 var CostcenterModel = require('../models').Costcenter;
 var RepairCompanyModel = require('../models').RepairCompany;
@@ -69,8 +70,8 @@ exports.login = function (req, res, next) {
 			myUser.NickName= Company.comtact;
 			//myUser.UserPhotoUrl= user.UserPhotoUrl;
 			myUser.Pid= config.weixingzh;
-			myUser.UserId= Company.id;
-			myUser.UserName= Company.comtact;
+			myUser.UserId= mob;
+			myUser.UserName= Company.id;
 			myUser.OrgName= Company.comtact;
 			//myUser.FixedPhone= Company.FixedPhone;
 			myUser.CellPhone= mob;
@@ -189,17 +190,11 @@ exports.create = function (req, res, next) {
   
   var repaircurrent = new RepairCurrentModel();
   //需要根据接口获得用户数据
-  //repaircurrent.signid= '11053416' ;
-  //repaircurrent.repairname= '谢居正';
-  //repaircurrent.repairtel= '65752525';
-  //repaircurrent.repairmail= 'xiejz1@spdb.com.cn';
-  //repaircurrent.repairType=20;
   repaircurrent.signid= req.session.user.UserId ;
   repaircurrent.repairname= req.session.user.UserName ;
   repaircurrent.repairtel= req.session.user.CellPhone ;
   repaircurrent.repairmail= req.session.user.Email ;
-  
-  //repaircurrent.
+
   if (req.query.code) {
   	//扫码查询资产需要根据接口获得成本中心数据
   	var code=req.query.code
@@ -323,57 +318,28 @@ exports.put = function (req, res, next) {
     //发送at消息
 //  at.sendMessageToMentionUsers(content, topic._id, req.session.user._id);
 	//通知维修管理员
-   if (repaircurrent.companyid){
+   if (!repaircurrent.companyid){
 	   UserModel.findOne({UserId:repaircurrent.managerid},function(e,user) {
 	   var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
 	   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=2';
-	   var data = {
-	   "first": {
-	     "value":"您好，您有新的待办任务！",
-	     "color":"#174177"
-	   },
-	   "keyword1":{
-	     "value":repaircurrent.repairContent,
-	     "color":"#173177"
-	   },
-	   "keyword2": {
-	     "value":"尚未分配维修公司",
-	     "color":"#172177"
-	   },
-	   "remark":{
-	     "value":"要求完成时间:"+repaircurrent.LstWarn_at+"\n请抽空处理谢谢。",
-	     "color":"#171177"
-	   }
-	   };
+	   var data = { "first": {"value":"您好，您有新的待办任务！","color":"#174177"},
+	   "keyword1":{ "value":repaircurrent.repairContent,"color":"#173177" },
+	   "keyword2": {"value":"尚未分配维修公司","color":"#172177" },
+	   "remark":{"value":"要求完成时间:"+repaircurrent.LstWarn_at_ago+"\n请抽空处理谢谢。", "color":"#171177"} };
 	   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
 	   	console.log(result);
 	   });
 	   });
 	} 
    //通知维修公司
-   if (repaircurrent.comtact_mob){
-	   UserModel.findOne({UserId:repaircurrent.companyid},function(e,user) {
-		   
+   if (!repaircurrent.comtact_mob){
+	   UserModel.findOne({UserId:repaircurrent.companyid},function(e,user) {	   
 		   var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
-		   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=2';
-		   var data = {
-		   "first": {
-		     "value":"您好，您有新的待办任务！",
-		     "color":"#174177"
-		   },
-		   "keyword1":{
-		     "value":repaircurrent.repairContent,
-		     "color":"#173177"
-		   },
-		   "keyword2": {
-		     "value":"尚未分配维修人员",
-		     "color":"#172177"
-		   },
-		   "remark":{
-		     "value":"要求完成时间:"+repaircurrent.LstWarn_at+"\n请抽空处理谢谢。",
-		     "color":"#171177"
-		   }
-		   };
+		   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=3';
+		   var data = { "first": { "value":"您好，您有新的待办任务！",  "color":"#174177" },
+		   "keyword1":{"value":repaircurrent.repairContent, "color":"#173177" },
+		   "keyword2": {"value":"尚未分配维修人员","color":"#172177"},
+		   "remark":{ "value":"要求完成时间:"+repaircurrent.LstWarn_at_ago+"\n请抽空处理谢谢。", "color":"#171177" } };
 		   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
 		   	console.log(result);
 		   });
@@ -391,8 +357,42 @@ exports.put = function (req, res, next) {
    RepairManagerModel.findOne({repairtype: repaircurrent.repairType}, 'managerid', function (err, manager) {
    	 ep.emit('manager',manager);
    });
+   //根据资产编号找历史数据
+   if (repaircurrent.code!="") {
+	   RepairHistoryModel.findOne({code: repaircurrent.code},null ,{sort: '-sign_at'},  function (err, RepairHistory) {
+		   if (RepairHistory){
+			   repaircurrent.companyid= RepairHistory.companyid;
+	   		   repaircurrent.companyname=RepairHistory.companyname;
+	   		   repaircurrent.comtact=RepairHistory.comtact;
+			   repaircurrent.comtact_tel=RepairHistory.comtact_tel;
+				repaircurrent.comtact_mob=RepairHistory.comtact_mob;
+				repaircurrent.comtact_mail=RepairHistory.comtact_mail;
+				repaircurrent.comtact_type=RepairHistory.comtact_type; 
+				ep.emit('repaircurrent',repaircurrent);
+		   }else{
+			 //根据保修类别查找保修公司。根据保修公司查找维修人员。
+			  	CompanyModel.findOne({repairtype: repaircurrent.repairType},  function (err, company) {
+			  			if (company)  {
+			   			repaircurrent.companyid= company.id;
+			   			repaircurrent.companyname=company.name;
+			   			RepairCompanyModel.findOne({companyid:company.id,repairtype: repaircurrent.repairType},  function (err, repaircompany) {
+			   				repaircurrent.comtact=repaircompany.comtact;
+			   				repaircurrent.comtact_tel=repaircompany.comtact_tel;
+			   				repaircurrent.comtact_mob=repaircompany.comtact_mob;
+			   				repaircurrent.comtact_mail=repaircompany.comtact_mail;
+			   				repaircurrent.comtact_type=repaircompany.msk1; 				
+			  	         ep.emit('repaircurrent',repaircurrent);
+			   			});
+			   		}else{
+			   			ep.emit('repaircurrent',repaircurrent);
+			   		};  			
+			   	    }); 	 
+		   };
+		   
+	   });
+   }else{
    //根据保修类别查找保修公司。根据保修公司查找维修人员。
-  		CompanyModel.findOne({repairtype: repaircurrent.repairType},  function (err, company) {
+  	CompanyModel.findOne({repairtype: repaircurrent.repairType},  function (err, company) {
   			if (company)  {
    			repaircurrent.companyid= company.id;
    			repaircurrent.companyname=company.name;
@@ -406,11 +406,9 @@ exports.put = function (req, res, next) {
    			});
    		}else{
    			ep.emit('repaircurrent',repaircurrent);
-   		};
-   			
-   			
+   		};  			
    	    }); 		
-   
+   };
    
    
   
@@ -468,6 +466,7 @@ exports.update = function (req, res, next) {
 	RepairCurrentModel.findOne({_id: repairid}, function (err, repaircurrent){
 		if (usertype==1) {
 			repaircurrent.repairassess=validator.trim(req.body.repairassess);
+			repaircurrent.assess_at=moment().format('YYYY-MM-DD hh:mm');
 			repaircurrent.repairassesscontent=validator.trim(req.body.repairassesscontent);
 		    repaircurrent.statu=5;
 		    ep.emit('repaircurrent',repaircurrent);

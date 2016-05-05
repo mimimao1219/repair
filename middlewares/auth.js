@@ -10,7 +10,27 @@ var tools = require('../common/tools')
 var config     = require('../config');
 var eventproxy = require('eventproxy');
 //var UserProxy  = require('../proxy').User;
+var WechatAPI = require('wechat-api');
 
+//微信推送
+exports.sendTemplateOne = function (repairCurrent,usertype) {
+	var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
+	var url= 'http://'+config.host+'/'+repairCurrent._id+'/edit?usertype='+usertype;
+	var data = {"first": { "value":"您好，您有新的待办任务！","color":"#174177"},
+			   "keyword1":{"value":repairCurrent.repairContent,"color":"#173177" },
+			   "keyword2": { "value":"待办","color":"#172177" },
+			   "remark":{ "value":"要求完成时间:"+repairCurrent.LstWarn_at_ago+"\n请抽空处理谢谢。", "color":"#171177"} };
+	var userid = repairCurrent.signid;
+		if (usertype===2) {userid = repairCurrent.managerid; };
+		if (usertype===3) {userid = repairCurrent.companyid; };
+		if (usertype===4) {userid = repairCurrent.comtact_mob; };
+	UserModel.findOne({UserId:userid},function(e,user) {
+		   if (user) {	
+			   console.log(usertype+'---'+userid);
+		  // api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) { });
+		   }	 
+	});	
+};
 
 // 验证用户第一步
 exports.authUserOne = function (req, res, next) {

@@ -15,7 +15,7 @@ var schedule = require("node-schedule");
 require('./middlewares/mongoose_log'); // 打印 mongodb 查询日志
 require('./models');
 var webRouter = require('./web_router');
-//var auth = require('./middlewares/auth');
+var auth = require('./middlewares/auth');
 var errorPageMiddleware = require('./middlewares/error_page');
 var proxyMiddleware = require('./middlewares/proxy');
 //var RedisStore = require('connect-redis')(session);
@@ -31,7 +31,7 @@ var renderMiddleware = require('./middlewares/render');
 var logger = require('./common/logger');
 var helmet = require('helmet');
 var bytes = require('bytes')
-var RepairCurrentModel = require('../models').RepairCurrent;
+
 
 
 // 静态文件目录
@@ -145,48 +145,99 @@ if (!module.parent) {
 
   });
 }
-//定时任务 每天8点到17点，每间隔15分钟扫描一次
+
+var RepairCurrentModel = require('./models').RepairCurrent;
+var RepairHistoryModel = require('./models').RepairHistory;
+//var tools        = require('./common/tools');
+//var UserModel = require('../models').User;
+var moment = require('moment');
+
+
+//定时任务 每天8点到17点，每间隔一小时扫描一次
 var WechatAPI = require('wechat-api');
 var rule = new schedule.RecurrenceRule();
 rule.dayOfWeek = [0, new schedule.Range(1, 6)];
 rule.hour = [new schedule.Range(8, 17)];
-rule.minute = [0, 30];  
+rule.minute = [10];  
 var j = schedule.scheduleJob(rule, function(){
+	var lday = moment().subtract(1,'days').format('YYYY-MM-DD hh:mm');
+	var lhour = moment().subtract(25,'minutes').format('YYYY-MM-DD hh:mm');
 	RepairCurrentModel.find({}).exec(function (err, RepairCurrents) {
 		RepairCurrents.forEach(function (RepairCurrent) {
+			//console.log(RepairCurrent);
+			//评价过并过了一天挪走
+			if (RepairCurrent.statu===5 && moment(RepairCurrent.assess_at).isBefore(lday)) {
+				var RepairHistory = new RepairHistoryModel(RepairCurrent);
+				//RepairHistory = RepairCurrent;
+				RepairHistory.save();
+				RepairCurrent.remove();
+				//console.log('1---');
+			}
+			//强制结束的直接挪走
+			if (RepairCurrent.statu===4 ) {
+				var RepairHistory = new RepairHistoryModel(RepairCurrent);
+				//RepairHistory = RepairCurrent;
+				//console.log(RepairHistory);
+				RepairHistory.save();
+				RepairCurrent.remove();
+				//console.log('2---');
+			}
+			//以结束并过了一天 默认评价中评
+			if (RepairCurrent.statu===3 && moment(RepairCurrent.repairend_at).isBefore(lday)) {
+				RepairCurrent.repairassess=2;
+				RepairCurrent.assess_at=moment().format('YYYY-MM-DD hh:mm');
+				RepairCurrent.statu=5;
+				RepairCurrent.save();
+				//console.log('3---');
+			}
+			//未结束超过了一天 微信通知
+			if (RepairCurrent.statu===2  ) {
+
+				if (RepairCurrent.msk1===1&&moment(RepairCurrent.LstWarn_at).isBefore(lday) ){	
+					
+					auth.sendTemplateOne(RepairCurrent,2);
+					auth.sendTemplateOne(RepairCurrent,3);
+					auth.sendTemplateOne(RepairCurrent,4);
+					//console.log('5---');
+				}
+				if (RepairCurrent.comtact_mob&&RepairCurrent.msk1===0&&moment(RepairCurrent.sign_at).isBefore(lhour)){
+					RepairCurrent.msk1=1;
+					RepairCurrent.statu=2;
+					RepairCurrent.save();
+					auth.sendTemplateOne(RepairCurrent,4)	
+					//console.log('77---');
+				}
+				
+				if (RepairCurrent.msk1===0){
+					auth.sendTemplateOne(RepairCurrent,3);
+					//console.log('4---');
+				}
+				
+			}
 			
-			console.log("执行任务");
+			//未分配，如果维修公司，维修人员都有，维修公司立即通知，维修人员25小时后通知。
+			//没有就立即通知系统管理员
+			if (RepairCurrent.statu===1 ) {
+				if (RepairCurrent.companyid&&RepairCurrent.msk1===0){
+					auth.sendTemplateOne(RepairCurrent,3)
+					//RepairCurrent.statu=2;
+					//RepairCurrent.save();
+					//console.log('6---');
+				};				
+				if (RepairCurrent.comtact_mob&&RepairCurrent.msk1===0&&moment(RepairCurrent.sign_at).isBefore(lhour)){
+					RepairCurrent.msk1=1;
+					RepairCurrent.statu=2;
+					RepairCurrent.save();
+					auth.sendTemplateOne(RepairCurrent,4)	
+					//console.log('7---');
+				}
+			}
+			
+			
 		});
 	});
 });
 
 
-
-var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
-var templateId= 'HKRySQQFlR9e-bl7pCvZxheEmk956TdQIh5WbHVbxlA';
-//URL置空，则在发送后,点击模板消息会进入一个空白页面（ios）, 或无法点击（android）
-var url= 'http://weixin.qq.com/download';
-var data = {
-"first": {
-  "value":"您好，您有新的待办任务！",
-  "color":"#174177"
-},
-"keyword1":{
-  "value":"请到成本中心维修电脑",
-  "color":"#173177"
-},
-"keyword2": {
-  "value":"待办",
-  "color":"#172177"
-},
-
-"remark":{
-  "value":"要求完成时间:2016-05-02\n请抽空处理\n谢谢。",
-  "color":"#171177"
-}
-};
-api.sendTemplate('oJme-s5bmL9j-Ie2aO3TL9y2zowA', config.weixin.templateId, url, data, function (err, result) {
-	console.log(result);
-});
 //oJme-szsGYjRcIMIFxvvt5XAI8qo
 module.exports = app;

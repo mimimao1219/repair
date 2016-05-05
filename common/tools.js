@@ -4,6 +4,9 @@ var CryptoJS = require("crypto-js");
 
 moment.locale('zh-cn'); // 使用中文
 
+
+
+
 //加密
 exports.myCipheriv = function (data,config) {
 	var _strKey = CryptoJS.enc.Utf8.parse(config.key);

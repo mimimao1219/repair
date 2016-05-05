@@ -10,7 +10,6 @@ var config = {
   name: 'repair', // 名字
   description: '浦发保修管理', // 描述
   keywords: '保修',
-  // cdn host，如 http://cnodejs.qiniudn.com
   site_static_host: '', // 静态文件存储域名
   // 设置域名
   host: 'localhost',
@@ -72,8 +71,9 @@ var config = {
         appSecret: 'ae9b79a09a05aef3ff0b72e21174a2d0',
         appToken: 'mimimao',
         jsdkToken: '',
-        templateId:'HKRySQQFlR9e-bl7pCvZxheEmk956TdQIh5WbHVbxlA',
+        templateId:'ValECG0NODDNWsthxekCyJ_ux90KyZrz7rEZ2hLAGmI',
  	},
+ 	//ValECG0NODDNWsthxekCyJ_ux90KyZrz7rEZ2hLAGmI
  //浦发接口
  	pftoken:'FaultRepair',
  	weixingzh:'spdbcloud',

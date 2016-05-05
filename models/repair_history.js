@@ -7,7 +7,7 @@ var _         = require('lodash');
 var tools = require('../common/tools');
 
 
-var RepairCurrentSchema = new Schema({
+var RepairHistorySchema = new Schema({
   id:{ type: Number },
   signdate:{ type: String },//保修时间
   signtime:{ type: String },
@@ -39,7 +39,6 @@ var RepairCurrentSchema = new Schema({
   confirm_at: { type: Date },
   LstWarn_at: { type: Date },
   repairend_at: { type: Date },
-  assess_at:{ type: Date },  //评价时间
   code:{ type: String }, //资产编号
   
   comtact:String,
@@ -53,25 +52,25 @@ var RepairCurrentSchema = new Schema({
 });
 
 //RepairCurrentSchema.plugin(BaseModel);
-RepairCurrentSchema.index({sign_at: -1});
-RepairCurrentSchema.index({companyid: 1});
+RepairHistorySchema.index({sign_at: -1});
+RepairHistorySchema.index({companyid: 1});
 
-RepairCurrentSchema.methods.confirm_at_ago = function () {
+RepairHistorySchema.methods.confirm_at_ago = function () {
     return tools.formatDate(this.confirm_at, false);
   };
 
-RepairCurrentSchema.methods.LstWarn_at_ago = function () {
+  RepairHistorySchema.methods.LstWarn_at_ago = function () {
     return tools.formatDate(this.LstWarn_at, false);
   };
   
- RepairCurrentSchema.methods.sign_at_ago = function () {
+  RepairHistorySchema.methods.sign_at_ago = function () {
     return tools.formatDate(this.sign_at, false);
   };
- RepairCurrentSchema.methods.repairend_at_ago = function () {
+  RepairHistorySchema.methods.repairend_at_ago = function () {
     return tools.formatDate(this.repairend_at, false);
   };
 
-RepairCurrentSchema.virtual('repairStatu').get(function () {
+  RepairHistorySchema.virtual('repairStatu').get(function () {
   var statu  = this.statu;
   var pair = _.find(config.repairStatu, function (_pair) {
     return _pair[0] === statu;
@@ -84,7 +83,7 @@ RepairCurrentSchema.virtual('repairStatu').get(function () {
   }
 });
 
-RepairCurrentSchema.virtual('fpStatu').get(function () {
+  RepairHistorySchema.virtual('fpStatu').get(function () {
   var msk1  = this.msk1;
   var pair = _.find(config.fpStatu, function (_pair) {
     return _pair[0] === msk1;
@@ -97,7 +96,7 @@ RepairCurrentSchema.virtual('fpStatu').get(function () {
   }
 });
 
-RepairCurrentSchema.virtual('comtactname').get(function () {
+  RepairHistorySchema.virtual('comtactname').get(function () {
   var msk1  = this.comtact_type;
   var pair = _.find(config.linkType, function (_pair) {
     return _pair[0] === msk1;
@@ -112,4 +111,4 @@ RepairCurrentSchema.virtual('comtactname').get(function () {
 
 
 
-mongoose.model('RepairCurrent', RepairCurrentSchema);
+mongoose.model('RepairHistory', RepairHistorySchema);

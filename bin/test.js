@@ -13,14 +13,14 @@ var CryptoJS = require("crypto-js");
 	
 //	console.log(query);
 //});
-auth.getAssets('005800000000032447',config ,function (e,query) {	
-	console.log(query);
-});
+//auth.getAssets('005800000000032447',config ,function (e,query) {	
+//	console.log(query);
+//});
 
 
 //counters = new CountersModel({name : 'company'});
 //counters.save();
 //counters = new CountersModel({name : 'repair_type',seq:23});
 //counters.save();
-
-
+var d=1
+console.log(d+'')
