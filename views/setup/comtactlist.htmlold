@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>维修人管理</title>
+
+    <link rel="stylesheet" href="../public/stylesheets/mui.min.css" />
+    
+   <style> 
+    .mui-input-row{border-bottom: 1px solid #e1e2e3; }
+    .mui-input-row span{color: #9e9e9e; float: left;}
+     .mui-table-view-cells span{color: #000000; float: left;	position: relative;	overflow: hidden;padding: 10px 0px; display: block;	-webkit-touch-callout: none; border-bottom: 1px solid #ebecee; font-weight: 700; ;}
+	 .mui-white-space{ overflow: hidden;    white-space: nowrap;    text-overflow: ellipsis; padding-right: 15px;}
+    /*	新添加样式*/
+	.mui-table-view2{position: relative;	margin-top: 0;	margin-bottom: 0px;	padding-left: 0;	list-style: none;	background-color: #fff;}
+     .mui-input-row span{padding: 15px 0px;  }
+     /*	新添加样式2*/
+    .row1{width:50%; text-align: center; display: block; }
+   .btn-bg{background-image:  -webkit-gradient(linear, left top, left bottom, color-stop(0, #2cb5f2), color-stop(1, #046dbb)); height: 45px; line-height: 45px;}
+   .btn-size{width: 49%;border: none;color: #FFFFFF;padding-top: 15px;padding-left: 0px;float: left;border-radius: 0px}
+   .btn-size1{width: 50%;border: none;color: #FFFFFF;padding-top: 15px;padding-left: 0px; border-radius: 0px;}
+   .btn-span{float: left; display: inline;overflow: hidden; background-color: #FFFFFF; width: 1px;margin: 0px 1px; }
+   .mui-input-rows{border-bottom: none;}
+   .mui-input-rows input{text-align: left;  padding-left: 15px;}
+   .mui-input-rows label{width:35%; }
+   .row-bg{background-color:#ececec ;}
+   </style> 
+</head>
+
+<body>
+	
+	<!--保修公司选择-->
+	<div id="offCanvasWrapper" class="mui-off-canvas-wrap mui-draggable mui-slide-in">
+	<div class="mui-inner-wrap">	
+	<div id="offCanvasContentScroll" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+
+		<form id='edit_form' action='/setup/comtactsave' method='post'>
+			<input type='hidden' name='_csrf' value='<%= csrf %>'>
+		    <input type='hidden' id='repairtypename' name='repairtypename' value=''>
+		    	<input type='hidden' id='tid' name='tid' value=''>
+		    	<input type='hidden' id='companyid' name='companyid' value='<%= userid %>'>
+			
+			<div class="btn-bg" >
+			<a href="/setup/comtactlist"> <button  type="button"  class="mui-btn mui-btn-primary mui-btn-outlined btn-size mui-icon mui-icon-plus" style="color: #FFFFFF;">新增 </button></a>
+			<span class="btn-span" >&nbsp;&nbsp;|&nbsp;&nbsp;</span>
+			<button  type="submit" class="mui-btn mui-btn-primary mui-btn-outlined btn-size1 mui-icon mui-icon-checkmarkempty " style="color: #FFFFFF;">保存</button>
+			</div>
+			
+			<div style="border-bottom: 1px solid #0062CC; padding-bottom: 20px;background-color: #FFFFFF;">
+			<ul class="mui-table-view2">
+					
+					<li class="mui-input-row  mui-input-rows" >
+							    <label  style="padding-right: 0px;width: 37%;">联系人：</label>
+								<input id='comtact' name='comtact' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3;  float: left;width: 60%; padding-left: 15px; ">
+				    </li>
+					<li class="mui-input-row  mui-input-rows" >
+						    	<label  style="padding-right: 0px;width: 37%;">电话：</label>
+								<input id='comtact_tel' name='comtact_tel' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px;">
+						</li>
+						<li class="mui-input-row  mui-input-rows" >
+						    	<label  style="padding-right: 0px;width: 37%;">手机：</label>
+								<input id='comtact_mob' name='comtact_mob' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
+						</li>
+						<li class="mui-input-row  mui-input-rows" >
+						    	<label  style="padding-right: 0px;width: 37%;">邮件：</label>
+								<input id='comtact_mail' name='comtact_mail'  value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left;width: 60%; padding-left: 15px; ">
+						</li>
+						<li class="mui-input-row  mui-input-rows" >
+						    	<label  style="padding-right: 0px;width: 37%;">报修项目：</label>
+								<!--<input id='repairtypename' name='repairtypename'  value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px;">-->
+						        <select id='repairtype' name='repairtype' class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">
+									<option value="">请选择...</option>
+									<%if (repaircompanys!=null){%>
+							           <%- partial('./_optiontype', {collection:repairtypes, as:'repairtype'}) %>
+				                    <%}%>	
+								</select>
+						</li>
+						<li class="mui-input-row  mui-input-rows" >
+						    	<label  style="padding-right: 0px;  width: 37%;">联系人类型：</label>
+								<!--<input id='msk1' name='msk1' value= '' type="text" class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">-->
+						        <select id='msk1' name='msk1' class="mui-input-clear" style="  border-bottom: 1px solid #e1e2e3; float: left; width: 60%; padding-left: 15px; ">
+									<option value="">请选择...</option>
+									<option value="1">工程师</option>
+									<option value="2">维修主管</option>
+									<option value="3">总经理</option>
+								</select>
+								
+						</li>
+					
+			</ul>
+		</div>
+		
+		<div>
+			
+		</div>
+		</form>
+		
+		<!--维修供应商分配维修人员信息-->
+		<div>
+			<ul class="mui-table-view2"  id='comtactselect'>
+				<li class="mui-table-view-cells mui-input-row" style="background-color:#ececec ;" >
+					<span class="row1" >联系人/手机</span>	
+					
+					<span class="row1">报修项目</span>
+				</li>
+				<%if (repaircompanys!=null){%>
+							<%- partial('./_comtact', {collection:repaircompanys, as:'comtact'}) %>
+				<%}%>	
+		</ul>
+		</div>
+			
+		</div></div></div></div>
+		
+<script src="../public/javascripts/mui.min.js"></script>
+<script src="../public/javascripts/zepto.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+//选择维修人
+mui('#comtactselect').on('tap', 'a', function() {
+	document.getElementById('comtact').value = this.dataset.comtact;
+	document.getElementById('comtact_tel').value = this.dataset.comtact_tel;
+	document.getElementById('comtact_mob').value = this.dataset.comtact_mob;
+	document.getElementById('comtact_mail').value = this.dataset.comtact_mail;
+	document.getElementById('repairtype').value = this.dataset.repairtype;
+	document.getElementById('repairtypename').value = this.dataset.repairtypename;
+	document.getElementById('tid').value = this.dataset.tid;
+	document.getElementById('msk1').value = this.dataset.msk1;
+	document.getElementById('companyid').value = this.dataset.companyid;
+	
+});	
+$("#repairtype").change(function() { 	
+document.getElementById('repairtypename').value=	$("#repairtype option").eq($("#repairtype").attr("selectedIndex")).text();
+});
+
+
+</script>
+		
+	</body>
+</html>
+
+

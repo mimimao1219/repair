@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"repair_dev.repairhistories"},{"v":1,"key":{"sign_at":-1},"name":"sign_at_-1","ns":"repair_dev.repairhistories","background":true},{"v":1,"key":{"companyid":1},"name":"companyid_1","ns":"repair_dev.repairhistories","background":true}]}
