@@ -26,8 +26,8 @@ exports.sendTemplateOne = function (repairCurrent,usertype) {
 		if (usertype===4) {userid = repairCurrent.comtact_mob; };
 	UserModel.findOne({UserId:userid},function(e,user) {
 		   if (user) {	
-			   console.log(usertype+'---'+userid);
-		  // api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) { });
+			  // console.log(usertype+'---'+userid);
+		   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) { });
 		   }	 
 	});	
 };
@@ -54,7 +54,7 @@ exports.authUserTwo = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
 		 var openid = req.query.open_id;
 		 getUserInfo(openid,config,function(e,user1) {
-			 console.log(user1);
+			// console.log(user1);
 			 
 			 if (user1) {
 				var user = JSON.parse(user1);
@@ -123,10 +123,10 @@ function getIdentify(openid,config,cb) {
 function getUserInfo(openid,config,cb) {
     var data1='{"OpenID":"' + openid + '","Token":"'+config.pftoken+'","Pid":"'+config.weixingzh+'"}';
    
-    console.log(data1);
+  //  console.log(data1);
     
     var queryStr=tools.myCipheriv(data1,config);
-    console.log(queryStr);
+  //  console.log(queryStr);
     //queryStr="ecnR27LEOCTtL2Iu1fGJR5waUgfOcyrFYK4ii6DWBi/nzHgrwsnAUtHEmgFwwC0Q1xMYzYw3N/pNa8K3pYPBlAlvsyYRwneSSJRBLZB0lCbzYXFpTkN/r1BFpxK+At1bNLg2xDF3N9LCQizhJ2gJTQ==";
     var client = request.createClient('http://www.spdbcloud.com/');
     var data = {
@@ -135,9 +135,9 @@ function getUserInfo(openid,config,cb) {
     		ReqCode: '0'
     };
     client.post('api/WChartUserInfo',data, function(error, response, body) {
-    	console.log(response.statusCode);
+ //   	console.log(response.statusCode);
     	if (!error && response.statusCode == 200) {
-    			console.log(body);
+    	//		console.log(body);
     			if (body.ResultData) {   			
     			cb(null, tools.myDecipheriv(body.ResultData,config));
     			}else{   				
@@ -153,7 +153,7 @@ function getUserInfo(openid,config,cb) {
 
 function getAssets(AssetsNo,config,cb) {
     var data='{AssetsNo:"' + AssetsNo + '",Token:"'+config.pftoken+'"}';
-    console.log(data);
+  //  console.log(data);
     var queryStr=tools.myCipheriv(data,config);
     //var queryStr='yffobFj2ybyM5ApDa6Fs+2HKsKQQxkptG4O11JOdVCI0dpvm+Jm+igc2dOj3NJxs'
     	var client = request.createClient('http://www.spdbcloud.com/');
@@ -163,7 +163,7 @@ function getAssets(AssetsNo,config,cb) {
     		ReqCode: '0'
     };
     client.post('api/WChartAssets',data, function(error, response, body) {
-    	console.log(response.statusCode);
+   // 	console.log(response.statusCode);
     	if (!error && response.statusCode == 200) {
     			
     			if (body.ResultData) {   			
