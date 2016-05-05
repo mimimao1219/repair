@@ -37,10 +37,10 @@ exports.login = function (req, res, next) {
 	var mob = validator.trim(req.body.mob);
 	//var yzm = validator.trim(req.body.yzm);
 	var usertype = validator.trim(req.body.usertype);
-	console.log(usertype);
+	//console.log(usertype);
     if (usertype=='3'){
      	CompanyModel.findOne({tel:mob }, null, function (err, Company) {
-     		console.log(Company);
+     		//console.log(Company);
      		if (Company) {
      		var myUser = new UserModel();
 			myUser.OpenId= openid;
@@ -211,7 +211,7 @@ exports.create = function (req, res, next) {
   			ep.emit('repaircurrent',repaircurrent); 
   		}else{
   			auth.getAssets(code,config ,function (e,asset1) {	
-  				console.log(asset1);
+  			//	console.log(asset1);
   		  		if (asset1){
   		  		var asset = JSON.parse(asset1);
   		  		var cost = asset.UserCostCenter.split('-*');
@@ -308,7 +308,7 @@ exports.put = function (req, res, next) {
 		        if (err) {
 		          return next(err);
 		        }
-		        console.log(result.url);
+		       // console.log(result.url);
 		        proxy.emit('got_file', result.url);
 		      });
 		      });
