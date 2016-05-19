@@ -17,10 +17,7 @@ var config = {
   // mongodb 配置
   db: 'mongodb://127.0.0.1/repair_dev',
 
-  // redis 配置，默认是本地
-  //redis_host: '127.0.0.1',
-  //redis_port: 6379,
-  //redis_db: 0,
+
 
   session_secret: 'repair_mimimao', // 签名密钥 务必修改
   auth_cookie_name: 'nmimimao',
@@ -39,12 +36,7 @@ var config = {
 
   file_limit: '1MB',
 
-  // 版块
-  tabs: [
-    ['share', '分享'],
-    ['ask', '问答'],
-    ['job', '招聘'],
-  ],
+
   
    // repair状态
   repairStatu: [

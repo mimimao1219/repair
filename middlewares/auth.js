@@ -31,6 +31,16 @@ exports.sendTemplateOne = function (repairCurrent,usertype) {
 		   }	 
 	});	
 };
+/**
+ * 需要登录
+ */
+exports.userRequired = function (req, res, next) {
+  if (!req.session || !req.session.user) {
+    return res.status(403).send('forbidden!');
+  }
+
+  next();
+};
 
 // 验证用户第一步
 exports.authUserOne = function (req, res, next) {
@@ -120,14 +130,12 @@ function getIdentify(openid,config,cb) {
     });
 }
 
+
+
 function getUserInfo(openid,config,cb) {
     var data1='{"OpenID":"' + openid + '","Token":"'+config.pftoken+'","Pid":"'+config.weixingzh+'"}';
    
-  //  console.log(data1);
-    
     var queryStr=tools.myCipheriv(data1,config);
-  //  console.log(queryStr);
-    //queryStr="ecnR27LEOCTtL2Iu1fGJR5waUgfOcyrFYK4ii6DWBi/nzHgrwsnAUtHEmgFwwC0Q1xMYzYw3N/pNa8K3pYPBlAlvsyYRwneSSJRBLZB0lCbzYXFpTkN/r1BFpxK+At1bNLg2xDF3N9LCQizhJ2gJTQ==";
     var client = request.createClient('http://www.spdbcloud.com/');
     var data = {
     		UID: 1,
@@ -135,15 +143,12 @@ function getUserInfo(openid,config,cb) {
     		ReqCode: '0'
     };
     client.post('api/WChartUserInfo',data, function(error, response, body) {
- //   	console.log(response.statusCode);
     	if (!error && response.statusCode == 200) {
-    	//		console.log(body);
     			if (body.ResultData) {   			
     			cb(null, tools.myDecipheriv(body.ResultData,config));
     			}else{   				
     				cb(null, null);
-    			}
-    			//return tools.myDecipheriv(JSON.parse(body).ResultData); 			
+    			}			
     		}else{
     			cb(null, null);
     		}
@@ -153,9 +158,7 @@ function getUserInfo(openid,config,cb) {
 
 function getAssets(AssetsNo,config,cb) {
     var data='{AssetsNo:"' + AssetsNo + '",Token:"'+config.pftoken+'"}';
-  //  console.log(data);
     var queryStr=tools.myCipheriv(data,config);
-    //var queryStr='yffobFj2ybyM5ApDa6Fs+2HKsKQQxkptG4O11JOdVCI0dpvm+Jm+igc2dOj3NJxs'
     	var client = request.createClient('http://www.spdbcloud.com/');
     var data = {
     		UID: 1,
@@ -163,15 +166,13 @@ function getAssets(AssetsNo,config,cb) {
     		ReqCode: '0'
     };
     client.post('api/WChartAssets',data, function(error, response, body) {
-   // 	console.log(response.statusCode);
     	if (!error && response.statusCode == 200) {
     			
     			if (body.ResultData) {   			
     			cb(null, tools.myDecipheriv(body.ResultData,config));
     			}else{   				
     				cb(null, null);
-    			}
-    			//return tools.myDecipheriv(JSON.parse(body).ResultData); 			
+    			}			
     	}else{
 			cb(null, null);
 		}

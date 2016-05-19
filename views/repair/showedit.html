@@ -355,7 +355,7 @@
 		        timestamp: r.timestamp,
 		        nonceStr: r.nonceStr,
 		        signature: r.signature,
-		        jsApiList: ['checkJsApi','chooseImage','scanQRCode','previewImage','uploadImage','downloadImage']
+		        jsApiList: ['checkJsApi','chooseImage','scanQRCode','previewImage','uploadImage','downloadImage','hideOptionMenu']
 		    });
 		  },
 		  error: function(xhr, type){
@@ -366,7 +366,7 @@
 		//通过ready接口处理成功验证
 			wx.ready(function(){	
 				//document.getElementById('imagepr').addEventListener('tap', function() {	
-			
+			   wx.hideOptionMenu();
 				mui('#imagepr').on('tap', 'img', function() {
 					var pic='<%=images.qnsrc%>';
 					var ar='http://'+location.hostname+'/public/';

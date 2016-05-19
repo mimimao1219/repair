@@ -24,7 +24,8 @@ var fs = require('fs');
 //维修人员列表 的
 exports.comtactlist = function (req, res, next) {	
  var userid= req.query.userid;
- //userid='58';
+ if (userid===req.session.user.UserId&&req.session.user.usertype==='3'){
+	
  res.locals.userid =userid;
  var events = ['repaircompanys','repairtypes'];
   var ep = EventProxy.create(events, function (repaircompanys,repairtypes) {
@@ -32,11 +33,12 @@ exports.comtactlist = function (req, res, next) {
       repaircompanys: repaircompanys,
       repairtypes: repairtypes
     });
-  });
- 
+  }); 
+ }
  RepairCompanyModel.find({companyid:userid }, null,{sort: '-_id'}, ep.done('repaircompanys'));
  RepairTypeModel.find({companyid:userid }, null,{sort: '-_id'}, ep.done('repairtypes'));
-
+ 
+ 
 }
 //增加更新维修人员
 exports.comtactsave = function (req, res, next) {	
@@ -76,19 +78,21 @@ exports.comtactsave = function (req, res, next) {
 
 }
 //删除维修人员
-exports.comtactdel = function (req, res, next) {	
+//exports.comtactdel = function (req, res, next) {	
 	//req.user.id
-   var userid= req.query.userid;
-   RepairCompanyModel.remove({_id: userid}, function (err, RepairCompany) {
-      		res.redirect('/setup/comtactlist');
-      	});
-
-}
+//   var id= req.query.id;
+  // if (userid===req.session.user.UserId){
+ //  RepairCompanyModel.remove({_id: id}, function (err, RepairCompany) {
+ //     		res.redirect('/setup/comtactlist');
+ //     	});
+  // };
+//}
 
 //维修类型列表
 exports.typelist = function (req, res, next) {	
  var userid= req.query.userid;
  //userid='11003720';
+ if (userid===req.session.user.UserId&&req.session.user.usertype==='2'){
  res.locals.userid =userid;
  var events = ['myrepairtypes','repairtypes'];
   var ep = EventProxy.create(events, function (myrepairtypes,repairtypes) {
@@ -97,7 +101,7 @@ exports.typelist = function (req, res, next) {
       repairtypes: repairtypes
     });
   });
- 
+ };
  RepairManagerModel.find({managerid:userid }, null,{sort: 'repairname'}, ep.done('myrepairtypes'));
  RepairTypeModel.find({}, null,{sort: 'repairname'}, ep.done('repairtypes'));
 
@@ -140,6 +144,7 @@ exports.typesave = function (req, res, next) {
 exports.companylist = function (req, res, next) {	
  var userid= req.query.userid;
  //userid='11003720';
+ if (userid===req.session.user.UserId&&req.session.user.usertype==='2'){
  res.locals.userid =userid;
  var events = ['companys','repairtypes'];
   var ep = EventProxy.create(events, function (companys,repairtypes) {
@@ -148,7 +153,7 @@ exports.companylist = function (req, res, next) {
       repairtypes: repairtypes
     });
   });
- 
+ }
   RepairManagerModel.distinct('repairtype',{managerid:userid }, function (err,types) {
 	  CompanyModel.find({repairtype:{$in:types} }, null,{sort: 'name'}, ep.done('companys'));
   });

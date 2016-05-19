@@ -122,7 +122,7 @@
 		        timestamp: r.timestamp,
 		        nonceStr: r.nonceStr,
 		        signature: r.signature,
-		        jsApiList: ['checkJsApi','chooseImage','scanQRCode','previewImage','uploadImage','downloadImage']
+		        jsApiList: ['checkJsApi','chooseImage','scanQRCode','previewImage','uploadImage','downloadImage','hideOptionMenu']
 		    });
 		  },
 		  error: function(xhr, type){
@@ -130,7 +130,8 @@
 		  }		    
 		});
 			//通过ready接口处理成功验证
-			wx.ready(function(){				
+			wx.ready(function(){			
+				wx.hideOptionMenu();
 				// config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后
 				//  扫描二维码并返回结果
 				document.getElementById('scanQRCode').addEventListener('tap', function() { 
