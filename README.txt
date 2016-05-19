@@ -1,4 +1,5 @@
 windows安装
+试试
 1、安装mongodb-win32-x86_64-3.2.4-signed 数据库放到d盘，再新建d:\data\db 数据库存放路径。
 2、安装node-v5.10.1-x64.msi 直接点击下一步安装 也装到d盘。
 3、启动mongoDB：  启动mongoDB安装包服务端mongod.exe
@@ -15,14 +16,13 @@ windows安装
         jsdkToken: '',
         templateId:'ValECG0NODDNWsthxekCyJ_ux90KyZrz7rEZ2hLAGmI',
  	},
- 	
+
  	主要这几个参数更据需要修改。
- 	
+
  5、导入数据库，在cmd命令行输入
-cd d:\MongoDB\Server\3.2\bin 
+cd d:\MongoDB\Server\3.2\bin
 mongorestore.exe -h 127.0.0.1:27017 /d repair_dev /dir d:\fyrepair\repair_dev
 
 6、启动app.js，在cmd命令行输入
-cd d:\fyrepair 
+cd d:\fyrepair
 node app.js
-
