@@ -90,20 +90,21 @@ exports.comtactsave = function (req, res, next) {
 
 //维修类型列表
 exports.typelist = function (req, res, next) {	
- var userid= req.query.userid;
- //userid='11003720';
- if (userid===req.session.user.UserId&&req.session.user.usertype==='2'){
- res.locals.userid =userid;
- var events = ['myrepairtypes','repairtypes'];
-  var ep = EventProxy.create(events, function (myrepairtypes,repairtypes) {
-    res.render('setup/typelist', {
-    	  myrepairtypes: myrepairtypes,
-      repairtypes: repairtypes
-    });
-  });
- };
- RepairManagerModel.find({managerid:userid }, null,{sort: 'repairname'}, ep.done('myrepairtypes'));
- RepairTypeModel.find({}, null,{sort: 'repairname'}, ep.done('repairtypes'));
+	var userid= req.query.userid;
+	 //userid='11003720';
+	 if (userid===req.session.user.UserId&&req.session.user.usertype==='2'){
+	 res.locals.userid =userid;
+	 var events = ['myrepairtypes','repairtypes'];
+	  var ep = EventProxy.create(events, function (myrepairtypes,repairtypes) {
+	    res.render('setup/typelist', {
+	    	  myrepairtypes: myrepairtypes,
+	      repairtypes: repairtypes
+	    });
+	  });
+	 };
+	 RepairManagerModel.find({managerid:userid }, null,{sort: 'repairname'}, ep.done('myrepairtypes'));
+	 RepairTypeModel.find({}, null,{sort: 'repairname'}, ep.done('repairtypes'));
+
 
 }
 //增加更新维修类型
@@ -201,6 +202,50 @@ exports.companysave = function (req, res, next) {
 		     	});	
   	});	
   });
+};
+};
+
+
+//成本中心列表
+exports.costcenterlist = function (req, res, next) {	
+ 
+ var userid= req.query.userid;
+ //userid='11003720';
+ if (userid===req.session.user.UserId&&req.session.user.usertype==='2'){
+ res.locals.userid =userid;
+ var events = ['costcenters'];
+  var ep = EventProxy.create(events, function (costcenters) {
+    res.render('setup/costcenter', {
+    	costcenters: costcenters
+    });
+  });
+ };
+ 
+ CostcenterModel.find({}, null,{sort:'OrderIndex'} ep.done('costcenters'));
+ 
+}
+//增加更新成本中心
+exports.costcentersave = function (req, res, next) {	
+
+ if (req.body.tid=='') {
+    var Costcenter = new CostcenterModel();
+    //RepairType.repairtype   = CountersModel.findAndModify({update:{$inc:{'seq':1}}, query:{"name":"repair_type"}, new:true}).seq;
+    Costcenter.costCenter   = validator.trim(req.body.costCenter);
+    Costcenter.costCenterName   = validator.trim(req.body.costCenterName);
+    Costcenter.OrderIndex   = validator.trim(req.body.OrderIndex);
+    Costcenter.save(function (err, Costcenter) { 
+      		res.redirect('/setup/costcenterlist');
+   
+      	});
+  }else{
+	  CostcenterModel.findOne({_id:validator.trim(req.body.tid) }, null, function (err, Costcenter) {  
+		  Costcenter.costCenter   = validator.trim(req.body.costCenter);
+		  Costcenter.costCenterName   = validator.trim(req.body.costCenterName);
+		  Costcenter.OrderIndex   = validator.trim(req.body.OrderIndex);
+		  Costcenter.save(function (err, Costcenter) { 
+	      		res.redirect('/setup/costcenterlist');	   
+	      	});
+      	});	
 };
 };
 

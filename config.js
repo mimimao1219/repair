@@ -37,7 +37,7 @@ var config = {
   file_limit: '1MB',
 
 
-  
+
    // repair状态
   repairStatu: [
     [1, '待分配'],
@@ -50,7 +50,7 @@ var config = {
     [0, '公司未响应'],
     [1, '公司已响应'],
   ],
-  
+
    // 维修人类型
   linkType: [
     ['1', '工程师'],
@@ -69,6 +69,7 @@ var config = {
  //浦发接口
  	pftoken:'FaultRepair',
  	weixingzh:'spdbcloud',
+  authflag:'1',
  	//key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
  	//iv:"6iQsiXGB@w>K$g\a",
  	key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',

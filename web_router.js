@@ -32,6 +32,8 @@ router.get('/setup/typelist', auth.userRequired,  setup.typelist);//维修类型
 router.post('/setup/typesave', auth.userRequired, setup.typesave); //维修类型更新保存
 router.get('/setup/companylist', auth.userRequired,  setup.companylist);//维修公司列表
 router.post('/setup/companysave',auth.userRequired,  setup.companysave); //维修公司更新保存
+router.get('/setup/costcenterlist', auth.userRequired,  setup.costcenterlist);//成本中心列表
+router.post('/setup/costcentersave', auth.userRequired, setup.costcentersave); //成本中心更新保存
 
 // 微信签名
 router.post('/getsignature', getSignature);

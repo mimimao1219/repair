@@ -1,5 +1,4 @@
 
-
 var validator = require('validator');
 //var at           = require('../common/at');
 var WechatAPI = require('wechat-api');
@@ -30,7 +29,7 @@ exports.sign = function (req, res, next) {
 	var openid= req.query.openid;
 	var err=0;
 	err = req.query.err;
-	res.render('sign',{openid:openid,err:err});	
+	res.render('sign',{openid:openid,err:err});
 }
 exports.login = function (req, res, next) {
 	var openid = validator.trim(req.body.openid);
@@ -89,10 +88,10 @@ exports.login = function (req, res, next) {
 }
 
 exports.userlist = function (req, res, next) {
-	res.render('userlist');	
+	res.render('userlist');
 }
 
-exports.list = function (req, res, next) {		
+exports.list = function (req, res, next) {
   var usertype=req.session.user.usertype;
   res.locals.userid =req.session.user.UserId;
   res.locals.UserPhotoUrl =req.session.user.UserPhotoUrl;
@@ -142,38 +141,38 @@ exports.list = function (req, res, next) {
 	 	 ep.emit('repairfinishs',null);
 		 RepairCurrentModel.find(query3,{},options, ep.done('repairCurrentsing'));
 	 }
-	 	 
+
    });
-  //查询条件 
+  //查询条件
   var query = {};
 
   if (usertype === '1') {
       query = { signid: req.session.user.UserId };
       ep1.emit('query',query);
     }
-  if (usertype === '2') {	
+  if (usertype === '2') {
       RepairManagerModel.find({managerid: req.session.user.UserId}, 'repairtype',{sort: '-create_at'}, function (err, repairmanagers) {
       if (err) {
         return callback(err);
       }
-       query = { repairType: {$in: _.map(repairmanagers,'repairtype')} }; 
+       query = { repairType: {$in: _.map(repairmanagers,'repairtype')} };
        ep1.emit('query',query);
-  	  }); 
+  	  });
     }
 
    if (usertype === '3') {
       query = { companyid: req.session.user.UserId ,};
       ep1.emit('query',query);
-    } 
+    }
    if (usertype === '4') {
       query = { comtact_mob:req.session.user.CellPhone,msk1:1 };
       ep1.emit('query',query);
-    } 
+    }
 
 };
 
 exports.create = function (req, res, next) {
-	
+
   var events = ['repairtypes','repaircurrent','costcenters'];
   var ep = EventProxy.create(events, function (repairtypes,repaircurrent,costcenters) {
     res.render('repair/edit', {
@@ -184,10 +183,10 @@ exports.create = function (req, res, next) {
   });
 
   ep.fail(next);
-  
+
   RepairTypeModel.find({},null ,{sort: '-orderindex'},ep.done('repairtypes'));
   CostcenterModel.find({Statu:1},null ,{sort: '-orderindex costCenterName'},ep.done('costcenters'));
-  
+
   var repaircurrent = new RepairCurrentModel();
   //需要根据接口获得用户数据
   repaircurrent.signid= req.session.user.UserId ;
@@ -208,9 +207,9 @@ exports.create = function (req, res, next) {
   			repaircurrent.costcenter=cost[0];
   			repaircurrent.costcentername=cost[1];
   			repaircurrent.repairContent = asset.AssetsName;
-  			ep.emit('repaircurrent',repaircurrent); 
+  			ep.emit('repaircurrent',repaircurrent);
   		}else{
-  			auth.getAssets(code,config ,function (e,asset1) {	
+  			auth.getAssets(code,config ,function (e,asset1) {
   			//	console.log(asset1);
   		  		if (asset1){
   		  		var asset = JSON.parse(asset1);
@@ -228,18 +227,18 @@ exports.create = function (req, res, next) {
   	  	        myAsset.AssetsModel=asset.AssetsModel;
   	            myAsset.UserCostCenter=asset.UserCostCenter;
   	            myAsset.save();
-  		  		   ep.emit('repaircurrent',repaircurrent); 
+  		  		   ep.emit('repaircurrent',repaircurrent);
   		  		}else{
-  		  			ep.emit('repaircurrent',repaircurrent); 
+  		  			ep.emit('repaircurrent',repaircurrent);
   		  		}
   		  	});
   		}
   	});
- 
-  }else{	
-  	 ep.emit('repaircurrent',repaircurrent); 	 
+
+  }else{
+  	 ep.emit('repaircurrent',repaircurrent);
   }
- 
+
 };
 
 
@@ -247,7 +246,7 @@ exports.create = function (req, res, next) {
 //保存新维修信息
 
 exports.put = function (req, res, next) {
-	
+
   var repaircurrent = new RepairCurrentModel();
   repaircurrent.code   = validator.trim(req.body.code);
   repaircurrent.costcenter   = validator.trim(req.body.costcenter);
@@ -260,7 +259,7 @@ exports.put = function (req, res, next) {
   repaircurrent.repairmail = validator.trim(req.body.repairmail);
   repaircurrent.repairContent   = validator.trim(req.body.repairContent);
   var image1     = validator.trim(req.body.image);
-   
+
   // 验证
   var editError;
   if (repaircurrent.costcenter === '') {
@@ -278,7 +277,7 @@ exports.put = function (req, res, next) {
   repaircurrent.signtime=moment().format('hh:mm');
   repaircurrent.sign_at=moment().format('YYYY-MM-DD hh:mm');
   repaircurrent.confirm_at=moment().add(1,'h').format('YYYY-MM-DD hh:mm');
-  
+
   var ep = new EventProxy();
       ep.all(['repaircurrent','repairtype','manager'], function (repaircurrent,repairtype,manager) {
     	     repaircurrent.managerid=manager.managerid;
@@ -288,7 +287,7 @@ exports.put = function (req, res, next) {
 		      return next(err);
 		    }
 		    res.redirect('/');
-		    
+
 		    if (image1!=''){
 		    //  图片保存
 		    var proxy = new EventProxy();
@@ -302,7 +301,7 @@ exports.put = function (req, res, next) {
 			//下载图片
 		  	var token = config.weixin.jsdkToken;
 		  	image1.split(',').forEach(function (image) {
-		  	var dowloadUrl = 'http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=' + token + '&media_id=' + image;	
+		  	var dowloadUrl = 'http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=' + token + '&media_id=' + image;
 		  	http.get(dowloadUrl, function (file,image) {
 		  	store.upload(file, {filename: image}, function (err, result) {
 		        if (err) {
@@ -314,41 +313,43 @@ exports.put = function (req, res, next) {
 		      });
    		 });
    }
-    	
+
     //发送at消息
 //  at.sendMessageToMentionUsers(content, topic._id, req.session.user._id);
 	//通知维修管理员
    if (!repaircurrent.companyid){
 	   UserModel.findOne({UserId:repaircurrent.managerid},function(e,user) {
-	   var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
+	   //var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
 	   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=2';
 	   var data = { "first": {"value":"您好，您有新的待办任务！","color":"#174177"},
 	   "keyword1":{ "value":repaircurrent.repairContent,"color":"#173177" },
 	   "keyword2": {"value":"尚未分配维修公司","color":"#172177" },
 	   "remark":{"value":"要求完成时间:"+repaircurrent.LstWarn_at_ago+"\n请抽空处理谢谢。", "color":"#171177"} };
-	   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
-	   	console.log(result);
+      auth.sendTemplate(user.OpenId,  url, JSON.stringify(data), config, function (err, result) { });
+		//  api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
+	  //  	console.log(result);
+	  //  });
 	   });
-	   });
-	} 
+	}
    //通知维修公司
    if (!repaircurrent.comtact_mob){
-	   UserModel.findOne({UserId:repaircurrent.companyid},function(e,user) {	   
-		   var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
+	   UserModel.findOne({UserId:repaircurrent.companyid},function(e,user) {
+		   //var api = new WechatAPI(config.weixin.appId, config.weixin.appSecret);
 		   var url= 'http://'+req.hostname+'/'+repairCurrent._id+'/edit?usertype=3';
 		   var data = { "first": { "value":"您好，您有新的待办任务！",  "color":"#174177" },
 		   "keyword1":{"value":repaircurrent.repairContent, "color":"#173177" },
 		   "keyword2": {"value":"尚未分配维修人员","color":"#172177"},
 		   "remark":{ "value":"要求完成时间:"+repaircurrent.LstWarn_at_ago+"\n请抽空处理谢谢。", "color":"#171177" } };
-		   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
-		   	console.log(result);
+       auth.sendTemplate(user.OpenId,  url, JSON.stringify(data), config,function (err, result) { });
+			//  api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) {
+		  //  	console.log(result);
+		  //  });
 		   });
-		   });
-	}  
-  
-	});      	
+	}
+
+	});
    });
-   
+
 // 设置默认完成天数
    RepairTypeModel.findOne({repairtype: repaircurrent.repairType}, 'statu', function (err, repairtype) {
    	 ep.emit('repairtype',repairtype);
@@ -367,7 +368,7 @@ exports.put = function (req, res, next) {
 			   repaircurrent.comtact_tel=RepairHistory.comtact_tel;
 				repaircurrent.comtact_mob=RepairHistory.comtact_mob;
 				repaircurrent.comtact_mail=RepairHistory.comtact_mail;
-				repaircurrent.comtact_type=RepairHistory.comtact_type; 
+				repaircurrent.comtact_type=RepairHistory.comtact_type;
 				ep.emit('repaircurrent',repaircurrent);
 		   }else{
 			 //根据保修类别查找保修公司。根据保修公司查找维修人员。
@@ -380,15 +381,15 @@ exports.put = function (req, res, next) {
 			   				repaircurrent.comtact_tel=repaircompany.comtact_tel;
 			   				repaircurrent.comtact_mob=repaircompany.comtact_mob;
 			   				repaircurrent.comtact_mail=repaircompany.comtact_mail;
-			   				repaircurrent.comtact_type=repaircompany.msk1; 				
+			   				repaircurrent.comtact_type=repaircompany.msk1;
 			  	         ep.emit('repaircurrent',repaircurrent);
 			   			});
 			   		}else{
 			   			ep.emit('repaircurrent',repaircurrent);
-			   		};  			
-			   	    }); 	 
+			   		};
+			   	    });
 		   };
-		   
+
 	   });
    }else{
    //根据保修类别查找保修公司。根据保修公司查找维修人员。
@@ -401,17 +402,17 @@ exports.put = function (req, res, next) {
    				repaircurrent.comtact_tel=repaircompany.comtact_tel;
    				repaircurrent.comtact_mob=repaircompany.comtact_mob;
    				repaircurrent.comtact_mail=repaircompany.comtact_mail;
-   				repaircurrent.comtact_type=repaircompany.msk1; 				
+   				repaircurrent.comtact_type=repaircompany.msk1;
   	         ep.emit('repaircurrent',repaircurrent);
    			});
    		}else{
    			ep.emit('repaircurrent',repaircurrent);
-   		};  			
-   	    }); 		
+   		};
+   	    });
    };
-   
-   
-  
+
+
+
 
 };
 
@@ -421,17 +422,17 @@ exports.showEdit = function (req, res, next) {
   var usertype='';
   usertype= req.query.usertype;
   res.locals.usertype =usertype;
-  
+
   var ep = new EventProxy();
-      ep.all(['repaircurrent','companies','images'], function (repaircurrent,companies,images) {	  	
+      ep.all(['repaircurrent','companies','images'], function (repaircurrent,companies,images) {
 	  	res.render('repair/showedit', {
 	        repaircurrent: repaircurrent,
 	        companies: companies,
 	        images:images
       });
       });
-  
-  
+
+
   RepairCurrentModel.findOne({_id: repair_id}, function (err, repaircurrent){
   if (!repaircurrent) {
       res.render404('此维修记录不存在或已被删除。');
@@ -440,29 +441,29 @@ exports.showEdit = function (req, res, next) {
     ep.emit('repaircurrent',repaircurrent);
 //	判断是否管理用户
 
-    if (usertype==='2') { 	 
-      CompanyModel.find({repairtype:repaircurrent.repairType},null ,{sort: '-orderindex'},ep.done('companies'));   
+    if (usertype==='2') {
+      CompanyModel.find({repairtype:repaircurrent.repairType},null ,{sort: '-orderindex'},ep.done('companies'));
      }else{
       ep.emit('companies',null);
-     }	
+     }
   });
   //   查询照片
      RepairImageModel.findOne({id:repair_id},null ,ep.done('images'));
 
 };
 
-exports.update = function (req, res, next) {	
+exports.update = function (req, res, next) {
 	var usertype   = validator.trim(req.body.usertype);
 	var repairid   = validator.trim(req.body.repairid);
-	
+
     var ep = new EventProxy();
-      ep.all(['repaircurrent'], function (repaircurrent) {	
+      ep.all(['repaircurrent'], function (repaircurrent) {
       	repaircurrent.save(function (err, repaircurrent) {
       		res.redirect('/');
       	});
-      
+
       });
-	
+
 	RepairCurrentModel.findOne({_id: repairid}, function (err, repaircurrent){
 		if (usertype==1) {
 			repaircurrent.repairassess=validator.trim(req.body.repairassess);
@@ -484,11 +485,11 @@ exports.update = function (req, res, next) {
    				repaircurrent.comtact_tel=repaircompany.comtact_tel;
    				repaircurrent.comtact_mob=repaircompany.comtact_mob;
    				repaircurrent.comtact_mail=repaircompany.comtact_mail;
-   				repaircurrent.comtact_type=repaircompany.msk1; 				
+   				repaircurrent.comtact_type=repaircompany.msk1;
   	         ep.emit('repaircurrent',repaircurrent);
    			});
 			}else{
-			 ep.emit('repaircurrent',repaircurrent);	
+			 ep.emit('repaircurrent',repaircurrent);
 			}
 		}
 		if (usertype==3) {
@@ -505,15 +506,15 @@ exports.update = function (req, res, next) {
 			repaircurrent.repairend_at=moment().format('YYYY-MM-DD hh:mm');
 			repaircurrent.statu=3;
 			ep.emit('repaircurrent',repaircurrent);
-		}	
-		
+		}
 
-		
+
+
 	});
-	
-	
-	
-	
+
+
+
+
 }
 
 exports.upload = function (req, res, next) {
@@ -545,4 +546,3 @@ exports.upload = function (req, res, next) {
 
   req.pipe(req.busboy);
 };
-
