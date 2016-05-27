@@ -1,5 +1,5 @@
 
-woshishi zheshishenme
+试试
 bback
 ./mongodump -h 127.0.0.1:27017 -d repair_dev -o /Users/lee/git/fyrepair/
 
