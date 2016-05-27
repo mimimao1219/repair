@@ -221,7 +221,7 @@ exports.costcenterlist = function (req, res, next) {
   });
  };
  
- CostcenterModel.find({}, null,{sort:'OrderIndex'} ep.done('costcenters'));
+ CostcenterModel.find({}, null,{sort:'OrderIndex'} ,ep.done('costcenters'));
  
 }
 //增加更新成本中心
