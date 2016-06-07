@@ -209,7 +209,11 @@ exports.create = function (req, res, next) {
   			repaircurrent.repairContent = asset.AssetsName;
   			ep.emit('repaircurrent',repaircurrent);
   		}else{
+<<<<<<< HEAD
   			auth.getAssets(code,config ,function (e,asset1) {
+=======
+  			auth.getAssets(code,config ,function (e,asset1) {	
+>>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
   			//	console.log(asset1);
   		  		if (asset1){
   		  		var asset = JSON.parse(asset1);
