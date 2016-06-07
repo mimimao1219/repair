@@ -28,7 +28,6 @@ exports.sendTemplateOne = function (repairCurrent,usertype) {
 		if (usertype===3) {userid = repairCurrent.companyid; };
 		if (usertype===4) {userid = repairCurrent.comtact_mob; };
 	UserModel.findOne({UserId:userid},function(e,user) {
-<<<<<<< HEAD
 		   if (user) {
 			  // console.log(usertype+'---'+userid);
 		    // api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) { });
@@ -45,13 +44,7 @@ exports.userRequired = function (req, res, next) {
   }
 
   next();
-=======
-		   if (user) {	
-			  // console.log(usertype+'---'+userid);
-		   api.sendTemplate(user.OpenId, config.weixin.templateId, url, data, function (err, result) { });
-		   }	 
-	});	
->>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
+
 };
 
 // 验证用户第一步
@@ -76,12 +69,7 @@ exports.authUserTwo = function (req, res, next) {
 	  if (!req.session || !req.session.user) {
 		 var openid = req.query.open_id;
 		 getUserInfo(openid,config,function(e,user1) {
-			// console.log(user1);
-<<<<<<< HEAD
 
-=======
-			 
->>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
 			 if (user1) {
 				var user = JSON.parse(user1);
 				var myUser = new UserModel();
@@ -173,17 +161,9 @@ function sendTemplate(openid, url, data,config,cb) {
 
 function getUserInfo(openid,config,cb) {
     var data1='{"OpenID":"' + openid + '","Token":"'+config.pftoken+'","Pid":"'+config.weixingzh+'"}';
-<<<<<<< HEAD
 
     var queryStr=tools.myCipheriv(data1,config);
-=======
-   
-  //  console.log(data1);
-    
-    var queryStr=tools.myCipheriv(data1,config);
-  //  console.log(queryStr);
-    //queryStr="ecnR27LEOCTtL2Iu1fGJR5waUgfOcyrFYK4ii6DWBi/nzHgrwsnAUtHEmgFwwC0Q1xMYzYw3N/pNa8K3pYPBlAlvsyYRwneSSJRBLZB0lCbzYXFpTkN/r1BFpxK+At1bNLg2xDF3N9LCQizhJ2gJTQ==";
->>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
+
     var client = request.createClient('http://www.spdbcloud.com/');
     var data = {
     		UID: 1,
@@ -191,15 +171,10 @@ function getUserInfo(openid,config,cb) {
     		ReqCode: '0'
     };
     client.post('api/WChartUserInfo',data, function(error, response, body) {
-<<<<<<< HEAD
+
     	if (!error && response.statusCode == 200) {
     			if (body.ResultData) {
-=======
- //   	console.log(response.statusCode);
-    	if (!error && response.statusCode == 200) {
-    	//		console.log(body);
-    			if (body.ResultData) {   			
->>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
+
     			cb(null, tools.myDecipheriv(body.ResultData,config));
     			}else{
     				cb(null, null);
@@ -213,10 +188,7 @@ function getUserInfo(openid,config,cb) {
 
 function getAssets(AssetsNo,config,cb) {
     var data='{AssetsNo:"' + AssetsNo + '",Token:"'+config.pftoken+'"}';
-<<<<<<< HEAD
-=======
-  //  console.log(data);
->>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
+
     var queryStr=tools.myCipheriv(data,config);
     	var client = request.createClient('http://www.spdbcloud.com/');
     var data = {
@@ -225,10 +197,7 @@ function getAssets(AssetsNo,config,cb) {
     		ReqCode: '0'
     };
     client.post('api/WChartAssets',data, function(error, response, body) {
-<<<<<<< HEAD
-=======
-   // 	console.log(response.statusCode);
->>>>>>> d97f86d9bbb46c04664b674403d362afb917a0a3
+
     	if (!error && response.statusCode == 200) {
 
     			if (body.ResultData) {
