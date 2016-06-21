@@ -90,10 +90,6 @@ app.use(session({
 	  saveUninitialized: true,
 	}));
 
-//用户授权
-//app.use(auth.authUserOne);
-//app.use(auth.authUserTwo);
-//app.use(auth.authUserThree);
 
 
 // set static, dynamic helpers
@@ -154,7 +150,7 @@ var moment = require('moment');
 //定时任务 每天8点到17点，每间隔一小时扫描一次
 var WechatAPI = require('wechat-api');
 var rule = new schedule.RecurrenceRule();
-rule.dayOfWeek = [0, new schedule.Range(1, 6)];
+rule.dayOfWeek = [0, new schedule.Range(1, 3)];
 rule.hour = [new schedule.Range(8, 17)];
 rule.minute = [10];  
 var j = schedule.scheduleJob(rule, function(){
