@@ -34,9 +34,42 @@ exports.sign = function (req, res, next) {
 exports.login = function (req, res, next) {
 	var openid = validator.trim(req.body.openid);
 	var mob = validator.trim(req.body.mob);
+	var userid = validator.trim(req.body.userid);
 	//var yzm = validator.trim(req.body.yzm);
 	var usertype = validator.trim(req.body.usertype);
-	//console.log(usertype);
+	if (usertype=='1'){
+		//根据工号获得员工信息
+     	RepairCurrentModel.findOne({signid:userid }, null, function (err, repaircurrent) {
+     		if (repaircurrent) {
+     		var myUser = new UserModel();
+			myUser.OpenId= openid;
+			myUser.NickName= repaircurrent.repairname;
+			//myUser.UserPhotoUrl= user.UserPhotoUrl;
+			myUser.Pid= config.weixingzh;
+			myUser.UserId= repaircurrent.signid;
+			myUser.UserName= repaircurrent.repairname;
+			myUser.OrgName= repaircurrent.costcentername;
+			//myUser.FixedPhone= Company.FixedPhone;
+			myUser.CellPhone= repaircurrent.repairtel;
+			myUser.Email= repaircurrent.repairmail;
+			myUser.usertype=usertype;
+			var ep = EventProxy.create(['manager'], function (manager) {
+				if (manager) {
+					myUser.usertype='2';
+				}
+				req.session.user=myUser;
+				myUser.save();
+				res.redirect('/');
+			});
+			//判断是否管理用户
+			RepairManagerModel.findOne({managerid:userid }, null, ep.done('manager') );
+						
+     		}else{
+     		res.redirect('/sign?openid='+openid+'&err=1');
+     		}
+     	});
+    }
+
     if (usertype=='3'){
      	CompanyModel.findOne({tel:mob }, null, function (err, Company) {
      		//console.log(Company);

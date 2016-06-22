@@ -77,7 +77,7 @@
 			</div>
 			<div class="mui-input-row">
 				<label>故障描述:</label>
-				<textarea required id='repairContent' name='repairContent' id="textarea" rows="3" placeholder="详细描述故障"><%= repaircurrent.repairContent  %></textarea>
+				<textarea required id='repairContent' name='repairContent' id="textarea" rows="3" placeholder="详细描述故障"><%= typeof(repaircurrent.repairContent) !== 'undefined' && repaircurrent.repairContent || '' %></textarea>
 			</div>
 			<div class="mui-input-row">
 				<label>图片上传:</label>	
