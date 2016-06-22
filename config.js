@@ -38,20 +38,20 @@ var config = {
 
 
 
-   // repair状态
+  // repair状态
   repairStatu: [
     [1, '待分配'],
     [2, '已分配'],
     [3, '已终结'],
     [4, '强制结束'],
   ],
-    // 分配状态
+  // 分配状态
   fpStatu: [
     [0, '公司未响应'],
     [1, '公司已响应'],
   ],
 
-   // 维修人类型
+  // 维修人类型
   linkType: [
     ['1', '工程师'],
     ['2', '维修主管'],
@@ -60,20 +60,20 @@ var config = {
   //微信
   weixin: {
   		appId: 'wxc6459c121f2e6399',
-        appSecret: 'ae9b79a09a05aef3ff0b72e21174a2d0',
-        appToken: 'mimimao',
-        jsdkToken: '',
-        templateId:'ValECG0NODDNWsthxekCyJ_ux90KyZrz7rEZ2hLAGmI',
+    appSecret: 'ae9b79a09a05aef3ff0b72e21174a2d0',
+    appToken: 'mimimao',
+    jsdkToken: '',
+    templateId: 'ValECG0NODDNWsthxekCyJ_ux90KyZrz7rEZ2hLAGmI',
  	},
  	//ValECG0NODDNWsthxekCyJ_ux90KyZrz7rEZ2hLAGmI
- //浦发接口
- 	pftoken:'FaultRepair',
- 	weixingzh:'spdbcloud',
-  authflag:'1',
+  //浦发接口
+ 	pftoken: 'FaultRepair',
+ 	weixingzh: 'spdbcloud',
+  authflag: '1',
  	//key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
  	//iv:"6iQsiXGB@w>K$g\a",
- 	key:'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
- 	iv:"6iQsiXGB@w>K$g*a",
+ 	key: 'SrJoxSWRwSPUVo1L6Ta84K7vCAADv6Ov',
+ 	iv: "6iQsiXGB@w>K$g*a",
 
  	//正式的OpenID：oYVvgv9ECQTYKRfXaQqxNd2z2Xm8 （张晓辉）
 
